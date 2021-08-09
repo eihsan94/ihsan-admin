@@ -27,9 +27,11 @@ const options  = {
             // The credentials is used to generate a suitable form on the sign in page.
             // You can specify whatever fields you are expecting to be submitted.
             // e.g. domain, username, password, 2FA token, etc.
-            async authorize(credentials, req) {
+            async authorize(credentials) {
               // Add logic here to look up the user from the credentials supplied
               const user = await login(credentials)
+              console.log(user);
+              
               if (user.email) {
                 // Any object returned will be saved in `user` property of the JWT
                 return user;

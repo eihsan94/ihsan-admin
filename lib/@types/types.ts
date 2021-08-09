@@ -21,16 +21,10 @@ export interface User {
 export interface Role {
     pk?: string;
     permissions: PermissionType[];
-    name: string;
+    role_name: string;
     price?: number;
     image?: string;
 }
-
-export interface Permission {
-    pk?: string;
-    type: PermissionType;
-}
-
 
 export interface Reservation {
     pk?: string;

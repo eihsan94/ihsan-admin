@@ -36,7 +36,9 @@ custom:
       local:
         sources:
           - table: ${self:service}-${opt:stage, self:provider.stage}
-            sources: [./src/migrations/specials.json]
+            sources: [./src/modules/db/seed/mainTable.json]
+          - table: ${self:service}-${opt:stage, self:provider.stage}-user
+            sources: [./src/modules/db/seed/user.json]
 
   serverless-offline:
     httpPort: 3009

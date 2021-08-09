@@ -1,3 +1,4 @@
+import { PermissionType } from '../../../../../lib/@types/enums'
 import express from 'express'
 const userRoutes = express.Router()
 import {
@@ -5,37 +6,33 @@ import {
   getUsers,
   getUserById,
   deleteUser,
-  getCurrentLoginUsers,
+  updateUser,
   getAllUserInfo,
   registerUser,
 } from '../controllers/userController'
-// import { protect, onlyPermit } from '../middleware/authMiddleware.js'
-// import {PermissionType} from '@libTypes/enums'
+import { protect, onlyPermit } from '../middleware/authMiddleware'
 
-userRoutes.route('/').get(getUsers).post(registerUser)
-userRoutes.route('/all').get(getAllUserInfo)
-userRoutes.route('/currentLoginUser').get(getCurrentLoginUsers)
+/**
+ * @permissions ONLY ALLOW admin like permission
+ */
+ const permissions: PermissionType[] = [PermissionType.CAN_EDIT_USER, PermissionType.ALL]
+ 
+userRoutes.route('/')
+  .post(registerUser)
+  .get(protect, onlyPermit(permissions), getUsers)
 
-// userRoutes.route('/').post(registerUser).get(protect, onlyPermit(PermissionType.CAN_EDIT_USER), getUsers)
+userRoutes.route('/all').get(protect, onlyPermit(permissions),getAllUserInfo)
+
 userRoutes.post('/login', authUser)
-// userRoutes
-//   .route('/profile')
-//   .get(protect, getUserProfile)
-//   .put(protect, updateUserProfile)  
-// userRoutes
-//   .route('/favoriteProducts')
-//   .put(protect, updateUserFavoriteProducts)
 
-// // MAKE SURE THIS IS LAST BECAUSE /:id WILL GET EVERYTHING
+/**
+ * @desc MAKE SURE THIS IS LAST BECAUSE /:id WILL GET EVERYTHING
+ * @exception only delete has admin like permission get and put is allowed if user are login
+ */
 userRoutes
   .route('/:id')
-    .get(getUserById)
-    // .put(updateUser)
-    .delete(deleteUser)
+    .get(protect, onlyPermit([...permissions,  PermissionType.CAN_EDIT_PROFILE,]),getUserById)
+    .put(protect, onlyPermit([...permissions,  PermissionType.CAN_EDIT_PROFILE,]),updateUser)
+    .delete(protect, onlyPermit(permissions),deleteUser)
 
-// userRoutes
-//   .route('/:id')
-//   .delete(protect, onlyPermit(PermissionType.CAN_EDIT_USER), deleteUser)
-//   .get(protect, onlyPermit(PermissionType.CAN_EDIT_USER), getUserById)
-//   .put(protect, onlyPermit(PermissionType.CAN_EDIT_USER), updateUser)
 export default userRoutes

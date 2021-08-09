@@ -5,7 +5,7 @@ const dynamoDb = new DynamoDB.DocumentClient(endpoint)
 export type CrudResponse = {json: any, status: number}
 export const getAll = async(attr: string ,val: string | number, tablePrefix?: string): Promise<CrudResponse> => {
   const params = {
-      TableName: `${process.env.DYNAMODB_TABLE}${tablePrefix}`,
+      TableName: `${tablePrefix ? process.env.DYNAMODB_TABLE + tablePrefix : process.env.DYNAMODB_TABLE}`,
       FilterExpression: `contains(${attr},:key)`,
       ExpressionAttributeValues: {
         ':key': val,
@@ -22,7 +22,7 @@ export const getAll = async(attr: string ,val: string | number, tablePrefix?: st
 
 export const getSingle = async(id: string | number, tablePrefix?: string): Promise<CrudResponse> => {
   const params = {
-      TableName: `${process.env.DYNAMODB_TABLE}${tablePrefix}`,
+      TableName: `${tablePrefix ? process.env.DYNAMODB_TABLE + tablePrefix : process.env.DYNAMODB_TABLE}`,
       Key: {
         pk: id,
       }
@@ -40,7 +40,7 @@ export const getSingle = async(id: string | number, tablePrefix?: string): Promi
 
 export const postSingle = async(Item: any, tablePrefix?: string): Promise<CrudResponse> => {
   const params = {
-    TableName: `${process.env.DYNAMODB_TABLE}${tablePrefix}`,
+    TableName: `${tablePrefix ? process.env.DYNAMODB_TABLE + tablePrefix : process.env.DYNAMODB_TABLE}`,
     Item,
   }
   let res = {json: {}, status: 201};
@@ -54,7 +54,23 @@ export const postSingle = async(Item: any, tablePrefix?: string): Promise<CrudRe
   return res;
 }
 
-export const putSingle = async(id: string, keyValArr: {key: string, val: any, alwaysUpdate?: boolean}[], tablePrefix?: string): Promise<CrudResponse> => {
+export const postBatch = async(RequestItems: any, tablePrefix?: string): Promise<CrudResponse> => {
+  const params = {
+    TableName: `${tablePrefix ? process.env.DYNAMODB_TABLE + tablePrefix : process.env.DYNAMODB_TABLE}`,
+    RequestItems,
+  }
+  let res = {json: {}, status: 201};
+
+  try {
+    await dynamoDb.batchWrite(params).promise();
+    res.json = RequestItems;
+  } catch(err) {
+    res = {json: {error: err}, status: 500}
+  }
+  return res;
+}
+
+export const putSingle = async(pk: string, keyValArr: {key: string, val: any, alwaysUpdate?: boolean}[], tablePrefix?: string): Promise<CrudResponse> => {
   const updatedAttributes = [];
   const expressionAttributeValues: any = {};
   
@@ -70,8 +86,8 @@ export const putSingle = async(id: string, keyValArr: {key: string, val: any, al
   const updateExpression = `set ${updatedAttributes.join(', ')}`;
   
   const params = {
-    TableName: `${process.env.DYNAMODB_TABLE}${tablePrefix}`,
-    Key: { pk: id },
+    TableName: `${tablePrefix ? process.env.DYNAMODB_TABLE + tablePrefix : process.env.DYNAMODB_TABLE}`,
+    Key: { pk},
     UpdateExpression: updateExpression,
     ExpressionAttributeValues: expressionAttributeValues,
     ReturnValues: 'ALL_NEW',
@@ -88,12 +104,12 @@ export const putSingle = async(id: string, keyValArr: {key: string, val: any, al
   return res;
 }
 
-export const deleteSingle = async(id: string, tablePrefix?: string): Promise<CrudResponse> => {
+export const deleteSingle = async(pk: string, tablePrefix?: string): Promise<CrudResponse> => {
   let result;
   const params = {
-    TableName: `${process.env.DYNAMODB_TABLE}${tablePrefix}`,
+    TableName: `${tablePrefix ? process.env.DYNAMODB_TABLE + tablePrefix : process.env.DYNAMODB_TABLE}`,
     Key: {
-      pk: id,
+      pk,
     }
   }
 
@@ -132,4 +148,68 @@ export const getAllUser = async(type: 'ACCOUNT' | 'SESSION' | 'USER' | ''): Prom
       res = {json: {error: err}, status: 500}
   }  
   return res
+}
+
+// BECAUSE THIS REQUIRES in keys PK AND SK
+export const putSingleUser = async(pk: string, sk: string, keyValArr: {key: string, val: any, alwaysUpdate?: boolean}[]): Promise<CrudResponse> => {
+  const updatedAttributes = [];
+  const expressionAttributeValues: any = {};
+  
+  keyValArr.map(attr => {
+    if (attr.val || attr.alwaysUpdate) {
+      updatedAttributes.push(`${attr.key} = :${attr.key}`);
+      expressionAttributeValues[`:${attr.key}`] = attr.val;
+    }
+  })
+  
+  updatedAttributes.push(`updated = :updated`);
+  expressionAttributeValues[':updated'] = new Date().toISOString();
+  const updateExpression = `set ${updatedAttributes.join(', ')}`;
+  
+  const params = {
+    TableName: `${process.env.DYNAMODB_TABLE}-user`,
+    Key: { 
+      pk,
+      sk
+    },
+    UpdateExpression: updateExpression,
+    ExpressionAttributeValues: expressionAttributeValues,
+    ReturnValues: 'ALL_NEW',
+  };
+  
+  let res = {json: {}, status: 201};
+  
+  try {
+    const {Attributes} = await dynamoDb.update(params).promise()
+    res.json = Attributes;
+  } catch(err) {
+    res = {json: {error: err}, status: 500}
+  }
+  return res;
+}
+
+export const deleteSingleUser = async(id: string): Promise<CrudResponse> => {
+  let res = {json: {}, status: 201};
+
+  const user = (await getAll('id', id, '-user')).json[0]
+  if (!user) {
+    return res = {json: {error: 'すでに削除しました！'}, status: 500}
+  }
+  const params = {
+    TableName: `${process.env.DYNAMODB_TABLE}-user`,
+    Key: {
+      pk: user.pk,
+      sk: user.sk
+    }
+  }
+
+
+  try {
+    console.log(params);
+    await dynamoDb.delete(params).promise();
+    res.json =  {message: '正常に削除できました🚮'}
+  } catch(err) {
+    res = {json: {error: err}, status: 500}
+  }
+  return res;
 }

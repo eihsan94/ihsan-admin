@@ -1,42 +1,39 @@
 import expressAsyncHandler from 'express-async-handler'
-import {User} from '@libTypes/types'
+import {Role} from '@libTypes/types'
 import * as uuid from 'uuid'
-import { encrypt } from '../utils/encryptionUtil'
 import { deleteSingle, getAll, getSingle, postSingle, putSingle } from '../utils/crudUtil'
 
-const partitionKeyPrefix = 'users'
+const partitionKeyPrefix = 'roles'
 /**
- * @desc    Get all users
- * @route   GET /api/users
+ * @desc    Get all roles
+ * @route   GET /api/roles
  * @access  Private/Admin
 */
-const getUsers = expressAsyncHandler(async ({res}) => {
+const getRoles = expressAsyncHandler(async ({res}) => {
   const result = await getAll('pk', partitionKeyPrefix)
   return res.status(result.status).json(result.json)
 })
 
 /**
- * @desc    Register a new user
- * @route   POST /api/users
+ * @desc    Register a new role
+ * @route   POST /api/roles
  * @access  Public
 */
-const registerUser = expressAsyncHandler(async (req, res) => {
+const registerRole = expressAsyncHandler(async (req, res) => {
   const timestamp = new Date().getTime()
-  const user: User = req.body
-  const userExist = (await getAll('email', user.email)).json.length > 0
-  if (userExist) {
-    return res.status(400).json({error: 'User already exists'})
+  const role: Role = req.body
+  const roleExists = (await getAll('role_name', partitionKeyPrefix)).json
+  console.log(roleExists);
+  
+  if (roleExists.includes(role.role_name)) {
+    return res.status(400).json({error: `この${role.role_name}権限はすでに登録されました`})
   }
   const Item = {
     pk: `${uuid.v4()}-${partitionKeyPrefix}`,
-    role_pk: user.role_pk,
-    shop_pks: user.pk,
-    email: user.email,
-    password: await encrypt(user.password),
-    fullname: user.fullname,
-    image: user.image,
-    birthday: user.birthday,
-    ihsanPoint: user.ihsanPoint,
+    permissions: role.permissions,
+    role_name: role.role_name,
+    price: role.price,
+    image: role.image,
     createdAt: timestamp,
     updatedAt: timestamp
   }
@@ -45,33 +42,28 @@ const registerUser = expressAsyncHandler(async (req, res) => {
 })
 
 /**
- * @desc    Get user by ID
- * @route   GET /api/users/:id
+ * @desc    Get role by ID
+ * @route   GET /api/roles/:id
  * @access  all
 */
-const getUserById = expressAsyncHandler(async (req, res) => {
+const getRoleById = expressAsyncHandler(async (req, res) => {
   const result = await getSingle(req.params.id)
   delete result.json.password
   return res.status(result.status).json(result.json)
 })
 /**
- * @desc    Update user profile
- * @route   PUT /api/users/profile
+ * @desc    Update role profile
+ * @route   PUT /api/roles/profile
  * @access  Private
  */
-const updateUser = expressAsyncHandler(async (req, res) => {
+const updateRole = expressAsyncHandler(async (req, res) => {
   const id  = req.params.id
-  const user: User = req.body
-  const hashedPassword = user.password ? await encrypt(user.password) : ''
+  const role: Role = req.body
   const keyValArr = [
-    {key: 'role_pk', val: user.role_pk} ,
-    {key: 'shop_pks', val: user.shop_pks} ,
-    {key: 'email', val: user.email} ,
-    {key: 'password', val: hashedPassword} ,
-    {key: 'fullname', val: user.fullname} ,
-    {key: 'image', val: user.image} ,
-    {key: 'birthday', val: user.birthday} ,
-    {key: 'ihsanPoint', val: user.ihsanPoint} ,
+    {key: 'permissions', val: role.permissions} ,
+    {key: 'role_name', val: role.role_name} ,
+    {key: 'price', val: role.price} ,
+    {key: 'image', val: role.image} ,
   ]
   const result = await putSingle(id, keyValArr)
   return res.status(result.status).json(result.json)
@@ -79,55 +71,20 @@ const updateUser = expressAsyncHandler(async (req, res) => {
 })
 
 /**
- * @desc    Delete user
- * @route   DELETE /api/users/:id
+ * @desc    Delete role
+ * @route   DELETE /api/roles/:id
  * @access  Private/Admin
 */ 
-const deleteUser = expressAsyncHandler(async (req, res) => {
+const deleteRole = expressAsyncHandler(async (req, res) => {
   const id  = req.params.id
   const result = await deleteSingle(id)
   return res.status(result.status).json(result.json)
 })
 
-
-// // @desc    Auth user & get token
-// // @route   POST /api/users/login
-// // @access  Public
-// const authUser = expressAsyncHandler(async (req, res) => {
-//   const { email, password } = req.body
-//   const date = new Date();
-//   date.setDate(date.getDate() + 10);
-  
-//   const user = await User.findOne({ email })
-//   if (user && (await user.matchPassword(password))) {
-//     const user_roles = await Role.find({_id: { "$in" : user.role_ids}})
-//     const user_role_types = user_roles.map(r => r.type)
-//     res.json({
-//       _id: user._id,
-//       name: user.name,
-//       email: user.email,
-//       isAdmin: user.isAdmin,
-//       favoriteProductIds: user.favoriteProductIds,
-//       role_ids: user.role_ids,
-//       address: user.address,
-//       city: user.city,
-//       postalCode: user.postalCode,
-//       country: user.country,
-//       roles: user_role_types,
-//       token: generateToken(user._id),
-//       expiresIn: date
-//     })
-//   } else {
-//     res.status(401)
-//     throw new Error('Invalid email or password')
-//   }
-// })
-
 export {
-  getUsers,
-  registerUser,
-  getUserById,
-  updateUser,
-  deleteUser,
-//   authUser,
+  getRoles,
+  registerRole,
+  getRoleById,
+  updateRole,
+  deleteRole,
 }

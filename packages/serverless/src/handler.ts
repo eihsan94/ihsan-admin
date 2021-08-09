@@ -4,6 +4,7 @@ import express from 'express'
 import ServerlessHttp from 'serverless-http'
 import cors from 'cors'
 import userRoutes from "./modules/routes/userRoutes";
+import roleRoutes from "./modules/routes/roleRoutes";
 
 const app = express();
 
@@ -15,6 +16,7 @@ if (process.env.STAGE === 'dev' || process.env.STAGE === 'local') {
 app.use(express.json());
 
 app.use('/api/users', userRoutes)
+app.use('/api/roles', roleRoutes)
 
 
 

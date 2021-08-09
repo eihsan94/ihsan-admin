@@ -1,6 +1,6 @@
 import { User } from '@libTypes/types'
 import expressAsyncHandler from 'express-async-handler'
-import { deleteSingle, getAll, getSingle, postSingle, putSingle, getAllUser } from '../utils/crudUtil'
+import { deleteSingle, getAll, getSingle, postSingle, putSingle, getAllUser, putSingleUser, deleteSingleUser } from '../utils/crudUtil'
 import { encrypt, validatePassword } from '../utils/encryptionUtil'
 import * as uuid from 'uuid'
 
@@ -22,17 +22,6 @@ const getUsers = expressAsyncHandler(async ({res}) => {
 */
 const getAllUserInfo = expressAsyncHandler(async ({res}) => {
   const result = await getAllUser('')
-  return res.status(result.status).json(result.json)
-})
-
-
-/**
- * @desc    Get all users that currently login into the app 
- * @route   GET /api/users
- * @access  Private/Admin
-*/
-const getCurrentLoginUsers = expressAsyncHandler(async ({res}) => {
-  const result = await getAllUser('SESSION')
   return res.status(result.status).json(result.json)
 })
 
@@ -90,23 +79,25 @@ const registerUser = expressAsyncHandler(async (req, res) => {
 */ 
 const deleteUser = expressAsyncHandler(async (req, res) => {
   const id  = req.params.id
-  const result = await deleteSingle(id, '-user')
+  const result = await deleteSingleUser(id)
   return res.status(result.status).json(result.json)
 })
 
 /**
  * @desc    Update user profile
- * @route   PUT /api/users/profile
+ * @route   PUT /api/users
  * @access  Private
  */
-const updateUserProfile = expressAsyncHandler(async (req, res) => {
+const updateUser = expressAsyncHandler(async (req, res) => {
   const id  = req.params.id
-  const user: User = req.body
-  const userExist = (await getAll('email', user.email, '-user')).json.length > 0
-  if (userExist) {
-    return res.status(400).json({error: 'このメールはすでに登録されています。'})
+  const oldUser = (await getAll('id', id, '-user')).json[0]
+  if (!oldUser) {
+    return res.status(422).json({error: `このユーザーは存在しません`})
   }
+  const user: User = req.body
   const hashedPassword = user.password ? await encrypt(user.password) : ''
+  console.log(oldUser);
+  
   const keyValArr = [
     {key: 'role_pk', val: user.role_pk} ,
     {key: 'shop_pks', val: user.shop_pks} ,
@@ -117,7 +108,7 @@ const updateUserProfile = expressAsyncHandler(async (req, res) => {
     {key: 'birthday', val: user.birthday} ,
     {key: 'ihsanPoint', val: user.ihsanPoint} ,
   ]
-  const result = await putSingle(id, keyValArr)
+  const result = await putSingleUser(oldUser.pk, oldUser.sk, keyValArr)
   return res.status(result.status).json(result.json)
 })
 /**
@@ -142,20 +133,8 @@ const authUser = expressAsyncHandler(async (req, res) => {
   if (user && (await validatePassword(password, user.password))) {
     // const user_roles = await Role.find({_id: { "$in" : user.role_ids}})
     // const user_role_types = user_roles.map(r => r.type)
-    res.json({
-      pk: user.pk,
-      id: user.id,
-      sk: user.sk,
-      role_pk: user.role_pk,
-      shop_pks: user.shop_pks,
-      name: user.name,
-      nickname: user.nickname,
-      image: user.image,
-      birthday: user.birthday,
-      ihsanPoint: user.ihsanPoint,
-      email: user.email,
-      emailVerified: user.emailVerified,
-    })
+    delete user.password
+    res.json(user)
   } else {
     res.status(401).json({error: 'メールアドレスもしくはパスワードが異なります😢'})
   }
@@ -165,9 +144,8 @@ export {
   getUsers,
   getUserById,
   deleteUser,
-  getCurrentLoginUsers,
   getAllUserInfo,
-  updateUserProfile,
+  updateUser,
   registerUser,
   authUser,
 }
