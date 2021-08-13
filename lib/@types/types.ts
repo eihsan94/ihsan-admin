@@ -26,10 +26,10 @@ export interface Role {
     image?: string;
 }
 
-export interface Reservation {
+export interface ReservationTicket {
     pk?: string;
     shop_pk: string;
-    lesson_pk: string;
+    group_event_pk: string;
     user_id: string;
     purchase_date: string;
     reservation_no: string; // reservation_no
@@ -38,7 +38,7 @@ export interface Reservation {
     }
 }
 
-export interface LessonSetting {
+export interface GroupEventSetting {
     online: {
         link: string;
         ihsanPostToken: string;
@@ -53,17 +53,17 @@ export interface MemberNotificationSetting {
    role_pk: string;
    notification_period: 'ONE_MONTH_BEFORE' | 'TWO_WEEKS_BEFORE' | 'ONE_WEEK_BEFORE';
 }
-export interface Course {
+export interface Group {
     pk?: string;
     name: string;
     description: string; // コースの全体的な
-    lesson_setting: LessonSetting;
+    group_event_setting: GroupEventSetting;
     member_notification_settings: MemberNotificationSetting[];
 }
 
-export interface Lesson {
+export interface GroupEvent {
     pk?: string;
-    course_pk: string;
+    group_pk: string;
     description: string; //クラスの内容
     date: string;
     start_time: string;
@@ -72,11 +72,11 @@ export interface Lesson {
         user_id: string;
         price: number;
     }[];
-    custom_lesson_setting: LessonSetting;
+    custom_group_event_setting: GroupEventSetting;
 }
 export interface Shop {
     pk?: string;
-    course_pks?: string[];
+    group_pks?: string[];
     membership_pks: string[]
     name: string;
     image?: string;
@@ -84,7 +84,7 @@ export interface Shop {
         weeklySale: number;
         topSubscriber: User[];
         customerBirthdays: {user:User}[];
-        topGrossingCourses: {course: Course; sales: number}[];
+        topGrossingGroups: {group: Group; sales: number}[];
     };
 }
 export interface Membership {

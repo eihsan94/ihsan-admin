@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from "axios";
 axios.defaults.baseURL = `${process.env.NEXT_PUBLIC_IHSAN_PAY_SERVER_BASE_URL}`;
 axios.defaults.headers.post['Content-Type'] ='application/json';
 
-const getLists = async<T>(url: string, reqConfig?:AxiosRequestConfig): Promise<T[]> => {
+const getLists = async<T>(url: string, reqConfig?:AxiosRequestConfig): Promise<T> => {
     try {
         const {data} =  await axios.get(`/api/${url}`, reqConfig)
         return data
