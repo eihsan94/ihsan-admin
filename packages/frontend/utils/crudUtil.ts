@@ -4,7 +4,7 @@ axios.defaults.headers.post['Content-Type'] ='application/json';
 
 const getLists = async<T>(url: string, reqConfig?:AxiosRequestConfig): Promise<T> => {
     try {
-        const {data} =  await axios.get(`/api/${url}`, reqConfig)
+        const {data} =  await axios.get(`/api/${url}`, await appendAuth(reqConfig))
         return data
     } catch (error) {
         return error.response
@@ -12,7 +12,7 @@ const getLists = async<T>(url: string, reqConfig?:AxiosRequestConfig): Promise<T
 }
 const getSingle = async<T>(url: string, reqConfig?:AxiosRequestConfig): Promise<T> => {
     try {
-        const {data} =  await axios.get(`/api/${url}`, reqConfig)
+        const {data} =  await axios.get(`/api/${url}`, await appendAuth(reqConfig))
         return data
     } catch (error) {
         return error.response
@@ -20,7 +20,7 @@ const getSingle = async<T>(url: string, reqConfig?:AxiosRequestConfig): Promise<
 }
 const postSingle = async<T>(url:string, body: T, reqConfig?:AxiosRequestConfig): Promise<T> => {
     try {
-        const {data} =  await axios.post(`/api/${url}`, body, reqConfig)
+        const {data} =  await axios.post(`/api/${url}`, body, await appendAuth(reqConfig))
         return data
     } catch (error) {
         return error.response
@@ -28,7 +28,7 @@ const postSingle = async<T>(url:string, body: T, reqConfig?:AxiosRequestConfig):
 }
 const updateSingle = async<T>(url: string, body: T, reqConfig?:AxiosRequestConfig): Promise<T> => {
     try {
-        const {data} =  await axios.put(`/api/${url}`, body, reqConfig)
+        const {data} =  await axios.put(`/api/${url}`, body, await appendAuth(reqConfig))
         return data
     } catch (error) {
         return error.response
@@ -36,7 +36,7 @@ const updateSingle = async<T>(url: string, body: T, reqConfig?:AxiosRequestConfi
 }
 const deleteSingle = async<T>(url: string, reqConfig?:AxiosRequestConfig): Promise<any> => {
     try {
-        const {data, status} =  await axios.delete(`/api/${url}`, reqConfig)
+        const {data, status} =  await axios.delete(`/api/${url}`, await appendAuth(reqConfig))
         return {message: data.message, status}
     } catch (error) {
         return error.response
@@ -44,7 +44,7 @@ const deleteSingle = async<T>(url: string, reqConfig?:AxiosRequestConfig): Promi
 }
 const login = async<T>(body: T, reqConfig?:AxiosRequestConfig): Promise<T> => {
     try {
-        const {data} =  await axios.post(`/api/users/login`, body, reqConfig)
+        const {data} =  await axios.post(`/api/users/login`, body, await appendAuth(reqConfig))
         return data
     } catch (error) {
         return error.response
@@ -52,7 +52,7 @@ const login = async<T>(body: T, reqConfig?:AxiosRequestConfig): Promise<T> => {
 }
 const signUp = async<T>(body: T, reqConfig?:AxiosRequestConfig): Promise<T> => {
     try {
-        const {data} =  await axios.post(`/api/users/`, body, reqConfig)
+        const {data} =  await axios.post(`/api/users/`, body, await appendAuth(reqConfig))
         return data
     } catch (error) {
         return error.response
@@ -69,3 +69,12 @@ export {
     signUp,
 }
 
+const appendAuth = async(reqConfig?: AxiosRequestConfig) => {
+    const cookies = await localStorage.getItem('cookies');
+    return {
+        ...reqConfig,
+        headers: {
+            Authorization:  `Bearer ${cookies}`,
+        }
+    }
+}

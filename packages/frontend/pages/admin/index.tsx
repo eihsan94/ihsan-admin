@@ -8,6 +8,7 @@ import { getCookies, redirectAuth } from '@utils/ssrAuth';
 import Layout from '@components/layout';
 import NormalTable from '@components/tables/normal';
 import { adminConfig } from 'constant/admin-page-setting';
+import { useFormContext } from 'contexts/FormContext';
 
 interface Props {
     cookies:string;
@@ -17,22 +18,19 @@ interface AdminDashboard {
     users: User[];
 }
 
-
 const Index:FC<Props> = ({cookies}) => {
-    const [roles, setRoles] = useState<Role[]>([])
-    const [users, setUsers] = useState<User[]>([])
+    const [roles, setRoles] = useState<Role[] | null>(null)
+    const [users, setUsers] = useState<User[] | null>(null)
+    const {formSubmitted} = useFormContext()
 
     useEffect(() =>{
         (async () => {
-            const apiRoles = await getLists<AdminDashboard>('roles/admin', {
-                headers: {
-                    Authorization:  `Bearer ${cookies}`,
-                }
-            })
+            await localStorage.setItem('cookies', cookies);
+            const apiRoles = await getLists<AdminDashboard>('roles/admin')
             setRoles(apiRoles.roles)
             setUsers(apiRoles.users)
         })();
-    }, [cookies])
+    }, [cookies, formSubmitted])
 
     return (
         <Layout>
@@ -46,6 +44,6 @@ export default Index
 
 
 export const getServerSideProps: GetServerSideProps<Props> = async (context) => {
-    const cookies =  getCookies(context)
+    const cookies = getCookies(context)
     return await redirectAuth(context, {cookies})
-  };
+};

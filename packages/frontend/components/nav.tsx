@@ -37,6 +37,7 @@ import { signOut, useSession } from 'next-auth/client';
     },[])
     const authHandler = async() => {
       if (session) {
+        localStorage.clear()
         return await signOut()
       }
       router.push('/auth')

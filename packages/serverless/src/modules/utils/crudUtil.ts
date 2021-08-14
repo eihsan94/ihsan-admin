@@ -75,7 +75,7 @@ export const putSingle = async(pk: string, keyValArr: {key: string, val: any, al
   const expressionAttributeValues: any = {};
   
   keyValArr.map(attr => {
-    if (attr.val || attr.alwaysUpdate) {
+    if (attr.val || attr.alwaysUpdate || typeof attr.val === 'number') {
       updatedAttributes.push(`${attr.key} = :${attr.key}`);
       expressionAttributeValues[`:${attr.key}`] = attr.val;
     }

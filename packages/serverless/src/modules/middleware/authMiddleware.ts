@@ -48,7 +48,7 @@ const protect = asyncHandler(async (req: IGetUserAuthInfoRequest, res, next) => 
 })
 
 
-// middleware for doing role-based permissions
+// middleware for doing role-based role_permissions
 const onlyPermit = (permissionTypes: PermissionType[]) => {
   // return a middleware
   return asyncHandler(async (req: IGetUserAuthInfoRequest, res, next) => {
@@ -56,7 +56,7 @@ const onlyPermit = (permissionTypes: PermissionType[]) => {
     const roles = (await getAll('pk', 'roles')).json
     const currentRole: Role = roles.find((r:Role) => r.pk === user.role_pk)
     if (currentRole) {
-      const isPermitted = permissionTypes.some(p => currentRole.permissions.includes(p))
+      const isPermitted = permissionTypes.some(p => currentRole.role_permissions.includes(p))
       if (isPermitted) {
         console.log(`PERMISSION GRANTED, welcome ${currentRole.role_name} ${user.email}`);
         

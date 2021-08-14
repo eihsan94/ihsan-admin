@@ -20,7 +20,7 @@ export interface User {
 
 export interface Role {
     pk?: string;
-    permissions: PermissionType[];
+    role_permissions: PermissionType[];
     role_name: string;
     price?: number;
     image?: string;

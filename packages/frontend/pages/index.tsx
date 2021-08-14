@@ -2,11 +2,16 @@ import Layout from "../components/layout";
 import React, {  } from "react";
 import { useSession } from "next-auth/client";
 import UserCard from "@components/Card/UserCard";
-import { redirectAuth } from "@utils/ssrAuth";
+import { getCookies, redirectAuth } from "@utils/ssrAuth";
 import { GetServerSideProps } from "next";
 
+import { FC } from "react";
 
-export default function Home() {
+interface Props {
+  cookies: string;
+}
+
+const Home:FC<Props> = () => {
   const [session] = useSession()
   return (
     <Layout>
@@ -14,7 +19,7 @@ export default function Home() {
     </Layout>
   )
 }
-
+export  default Home;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   return redirectAuth(context)

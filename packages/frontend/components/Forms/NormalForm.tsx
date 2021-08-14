@@ -1,13 +1,25 @@
 import React, { FC } from 'react'
 import { Formik, Form, Field,  } from 'formik';
 import * as Yup from 'yup';
-import { EmailIcon, LockIcon } from '@chakra-ui/icons';
-import { Box, Stack, InputGroup, InputLeftElement, Input, Button, useToast, FormControl, FormErrorMessage } from '@chakra-ui/react';
+import { Box, Stack, InputGroup, InputLeftElement, Input, Button, useToast, FormControl, FormErrorMessage, FormLabel } from '@chakra-ui/react';
 import { AxiosRequestConfig } from 'axios';
+import { useFormContext } from 'contexts/FormContext';
+import NormalInputs, { InputTypes } from '@components/Inputs';
 
 
 
-type InputField = {name: string, placeholder: string, type: string, icon: JSX.Element, isInvalid: (errors: any, touched: any) => boolean, errors: (errors: any) => any}
+export interface InputField {
+    name: string, 
+    isRequired?: boolean,
+    label: string, 
+    placeholder?: string, 
+    type: InputTypes;
+    icon?: JSX.Element, 
+    isInvalid: (errors: any, 
+    touched: any) => boolean, 
+    errors: (errors: any) => any
+    dataLists?: any[];
+}
 
 export interface NormalFormAPiHandler {
     fn:  (...args: any) => any;
@@ -15,27 +27,33 @@ export interface NormalFormAPiHandler {
     reqConfig?: AxiosRequestConfig;
 }
 export interface NormalFormProps  {
-    inputFields?: InputField[];
+    inputFields: InputField[];
     apiHandler: NormalFormAPiHandler;
     formSchema:Yup.SchemaOf<any>
 }
+
 const NormalForm: FC<NormalFormProps> = ({inputFields, apiHandler, formSchema}) => {
     const toast = useToast()
-
-    inputFields = [
-        {name: 'email', placeholder: 'メールアドレス',  type: 'email',  icon: <EmailIcon color="gray.300" fontSize="1.2em" ml="8px" mt="25px"/>, isInvalid: (errors, touched) => !!(errors.email && touched.email), errors: (errors: any) => errors.email},
-        {name: 'password', placeholder: 'パスワード',  type: 'password',  icon: <LockIcon color="gray.300" fontSize="1.2em" ml="10px" mt="20px"/>, isInvalid: (errors, touched) => !!(errors.password && touched.password), errors: (errors: any) => errors.password},
-    ] 
+    const {initialValues, submitFormCallBack} = useFormContext()
+    
     const submitHandler = async (value: any) => {
         const {fn, url, reqConfig} = apiHandler
-        console.log(value);
-        const res = (await fn(url(), value, reqConfig || {}))
-        const error = (res as unknown as {data: {error: string}}).data.error
+        const res = (await fn(url(value), value, reqConfig || {}))
+        let error = ''
+        if (res.data) {
+            error = (res as unknown as {data: {error: string}}).data.error
+        }
         const [title, description, status]: [string, string,  "error" | "info" | "warning" | "success" | undefined] = [
             error ? `エラー` : `正常`, 
             `${error || '正常に保存されました🙌🏻'}`,
             error ? 'error' : 'success',
         ]
+        /**
+         * @description this callback needed to trigger after submit actions like closing tht modal or fetching new data from server
+         */
+        if (!error) {
+            submitFormCallBack() 
+        }
         return toast({
             title,
             description,
@@ -49,37 +67,36 @@ const NormalForm: FC<NormalFormProps> = ({inputFields, apiHandler, formSchema}) 
         <Box mt={5}>
             <Stack spacing={4}>
                 <Formik
-                    initialValues={{email: '', password: '', passwordConfirmation: '' }}
+                    initialValues={initialValues}
                     validationSchema={formSchema}
                     onSubmit={(value) => submitHandler(value)}
                 >
-                  {({errors, touched, isSubmitting}) => (
+                  {({errors, touched, isSubmitting, setFieldValue}) => (
                       <Form>
                         {inputFields && inputFields.map((input: InputField, i) =>
                             <Field name={input.name} key={i}>
                                 {({ field }: {field: {name: string, value: string}}) => (
-                                    <FormControl isInvalid={input.isInvalid(errors, touched)} mb="5">
-                                            <InputGroup>
+                                    <FormControl isInvalid={input.isInvalid(errors, touched)} mb="5" isRequired={input.isRequired }>
+                                        <FormLabel ml="6">{input.label}</FormLabel>
+                                        <InputGroup>
+                                            {input.icon&&
                                                 <InputLeftElement
                                                     pointerEvents="none"
                                                     >
                                                     {input.icon}
                                                 </InputLeftElement>
-                                                <Input 
-                                                    {...field}
+                                            }
+                                            {/* add dropdown selection in form control input maybe make the input component below to be a new component that switch base on input types */}
+                                                <NormalInputs 
+                                                    field={{...field}}
                                                     id={input.name}
-                                                    rounded="full" 
-                                                    size="lg" 
-                                                    h={16}
-                                                    type={input.type} 
                                                     placeholder={input.placeholder}
-                                                    color={'gray.500'}
-                                                    _placeholder={{
-                                                        color: 'gray.300',
-                                                    }}
+                                                    type={input.type} 
+                                                    dataLists={input.dataLists}
+                                                    setFieldValue={setFieldValue}
                                                 />
-                                            </InputGroup>
-                                        <FormErrorMessage>{input.errors(errors)}</FormErrorMessage>
+                                        </InputGroup>
+                                        <FormErrorMessage ml="6">{input.errors(errors)}</FormErrorMessage>
                                     </FormControl>
                                 )}
                             </Field>

@@ -40,14 +40,12 @@ const registerRole = expressAsyncHandler(async (req, res) => {
   const timestamp = new Date().getTime()
   const role: Role = req.body
   const roleExists = (await getAll('role_name', partitionKeyPrefix)).json
-  console.log(roleExists);
-  
   if (roleExists.includes(role.role_name)) {
     return res.status(400).json({error: `この${role.role_name}権限はすでに登録されました`})
   }
   const Item = {
     pk: `${uuid.v4()}-${partitionKeyPrefix}`,
-    permissions: role.permissions,
+    role_permissions: role.role_permissions,
     role_name: role.role_name,
     price: role.price,
     image: role.image,
@@ -77,14 +75,13 @@ const updateRole = expressAsyncHandler(async (req, res) => {
   const id  = req.params.id
   const role: Role = req.body
   const keyValArr = [
-    {key: 'permissions', val: role.permissions} ,
+    {key: 'role_permissions', val: role.role_permissions} ,
     {key: 'role_name', val: role.role_name} ,
     {key: 'price', val: role.price} ,
     {key: 'image', val: role.image} ,
   ]
   const result = await putSingle(id, keyValArr)
   return res.status(result.status).json(result.json)
-  
 })
 
 /**
