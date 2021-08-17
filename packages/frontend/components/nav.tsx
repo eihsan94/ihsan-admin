@@ -25,6 +25,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/dist/client/router';
 import { signOut, useSession } from 'next-auth/client';
+import { useAppContext } from 'contexts/AppContext';
 
 
   export default function Nav() {
@@ -32,6 +33,7 @@ import { signOut, useSession } from 'next-auth/client';
     const { isOpen, onToggle } = useDisclosure();
     const [session] = useSession()
     const [init, setInit] = useState(false)
+    
     useEffect(() => {
       setInit(true)
     },[])
@@ -108,10 +110,12 @@ import { signOut, useSession } from 'next-auth/client';
     const linkColor = useColorModeValue('gray.600', 'gray.200');
     const linkHoverColor = useColorModeValue('gray.800', 'white');
     const popoverContentBgColor = useColorModeValue('white', 'gray.800');
+    const {appState} = useAppContext()
+    const {menus} = appState.json
     
     return (
       <Stack direction={'row'} spacing={4}>
-        {NAV_ITEMS.map((navItem, i) => (
+        {menus.map((navItem, i) => (
           <Box key={i}>
             <Popover trigger={'hover'} placement={'bottom-start'}>
               <PopoverTrigger>
@@ -188,12 +192,15 @@ import { signOut, useSession } from 'next-auth/client';
   };
   
   const MobileNav = () => {
+    const {appState} = useAppContext()
+    const {menus} = appState.json
+
     return (
       <Stack
         bg={useColorModeValue('white', 'gray.800')}
         p={4}
         display={{ md: 'none' }}>
-        {NAV_ITEMS.map((navItem) => (
+        {menus.map((navItem) => (
           <MobileNavItem key={navItem.label} {...navItem} />
         ))}
       </Stack>

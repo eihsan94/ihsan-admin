@@ -1,21 +1,39 @@
 import { PermissionType } from "./enums";
 
+export interface Menu {
+    label: string;
+    href: string;
+    children?: {
+        label: string;
+        href: string;
+    }[];
+}
+export interface AppState {
+    status?: number;
+    json: {
+        menus: Menu[];
+        error?: any;
+        admin?: {
+            roles: Role[];
+            users: User[];
+        }
+    }
+}
 export interface User {
     pk?: string;
     id?: string;
     sk?: string;
     GSI1PK?: string;
     role_pk: string;
-    shop_pks: string[];
+    shop_pks?: string[];
     name?: string; // this cannot be changed by user
-    nickname: string; // this can be changed by user
+    nickname?: string; // this can be changed by user
     type?: string;
     image?: string;
     password?: string; // currently we only enabled login with provider so this is null
     birthday?: string;
-    ihsanPoint: number;
-    email?: string;
-    emailVerified: boolean;
+    ihsanPoint?: number;
+    email: string;
 }
 
 export interface Role {

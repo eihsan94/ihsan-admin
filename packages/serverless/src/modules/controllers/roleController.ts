@@ -1,25 +1,10 @@
 import expressAsyncHandler from 'express-async-handler'
-import {Role} from '@libTypes/types'
+import {Role, User} from '@libTypes/types'
 import * as uuid from 'uuid'
 import { deleteSingle, getAll, getAllUser, getSingle, postSingle, putSingle } from '../utils/crudUtil'
 
 const partitionKeyPrefix = 'roles'
 
-/**
- * @desc    Get admin dashboards
- * @route   GET /api/roles/admin
- * @access  Private/Admin
-*/
-const getAdminDashboard = expressAsyncHandler(async ({res}) => {
-  try {
-    const roles = (await getAll('pk', partitionKeyPrefix)).json
-    const users = (await getAllUser('USER')).json
-    const dashboard = {roles, users}
-    return res.status(200).json(dashboard)
-  } catch (error) {
-    return res.status(error.status).json({error})    
-  }
-})
 
 /**
  * @desc    Get all roles
@@ -96,7 +81,6 @@ const deleteRole = expressAsyncHandler(async (req, res) => {
 })
 
 export {
-  getAdminDashboard,
   getRoles,
   registerRole,
   getRoleById,

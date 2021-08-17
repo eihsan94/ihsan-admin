@@ -5,9 +5,6 @@ import { Box, Stack, InputGroup, InputLeftElement, Input, Button, useToast, Form
 import { AxiosRequestConfig } from 'axios';
 import { useFormContext } from 'contexts/FormContext';
 import NormalInputs, { InputTypes } from '@components/Inputs';
-
-
-
 export interface InputField {
     name: string, 
     isRequired?: boolean,
@@ -18,7 +15,7 @@ export interface InputField {
     isInvalid: (errors: any, 
     touched: any) => boolean, 
     errors: (errors: any) => any
-    dataLists?: any[];
+    dataListsKey?: string;
 }
 
 export interface NormalFormAPiHandler {
@@ -35,8 +32,8 @@ export interface NormalFormProps  {
 const NormalForm: FC<NormalFormProps> = ({inputFields, apiHandler, formSchema}) => {
     const toast = useToast()
     const {initialValues, submitFormCallBack} = useFormContext()
-    
-    const submitHandler = async (value: any) => {
+
+    const submitHandler = async (value: any) => {        
         const {fn, url, reqConfig} = apiHandler
         const res = (await fn(url(value), value, reqConfig || {}))
         let error = ''
@@ -92,7 +89,7 @@ const NormalForm: FC<NormalFormProps> = ({inputFields, apiHandler, formSchema}) 
                                                     id={input.name}
                                                     placeholder={input.placeholder}
                                                     type={input.type} 
-                                                    dataLists={input.dataLists}
+                                                    dataListsKey={input.dataListsKey}
                                                     setFieldValue={setFieldValue}
                                                 />
                                         </InputGroup>

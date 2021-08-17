@@ -1,4 +1,4 @@
-import { User } from '@libTypes/types'
+import { AppState, Role, User } from '@libTypes/types'
 import expressAsyncHandler from 'express-async-handler'
 import { deleteSingle, getAll, getSingle, postSingle, putSingle, getAllUser, putSingleUser, deleteSingleUser } from '../utils/crudUtil'
 import { encrypt, validatePassword } from '../utils/encryptionUtil'
@@ -23,6 +23,16 @@ const getUsers = expressAsyncHandler(async ({res}) => {
 const getAllUserInfo = expressAsyncHandler(async ({res}) => {
   const result = await getAllUser('')
   return res.status(result.status).json(result.json)
+})
+
+/**
+ * @desc    Get all users dashboard including sessions, shops, roles, other init data
+ * @route   GET /api/users
+ * @access  Private/Admin
+*/
+const getUserLatest = expressAsyncHandler(async (req,res) => {
+  const dashboard = await generateDashboard((req as any).user)
+  return res.status(dashboard.status).json(dashboard)
 })
 
 /**
@@ -61,6 +71,7 @@ const registerUser = expressAsyncHandler(async (req, res) => {
     email: user.email,
     password: await encrypt(user.password),
     nickname: user.nickname,
+    name: user.nickname,
     image: user.image,
     birthday: user.birthday,
     type: 'USER',
@@ -148,5 +159,37 @@ export {
   updateUser,
   registerUser,
   authUser,
+  getUserLatest,
 }
 
+const generateDashboard = async (user: User) => {
+  const defaultMenus = [
+    {label: 'ホーム', href: '/'},
+  ]
+  let dashboard: AppState = {status: 200, json: {menus: defaultMenus}}
+  try {
+    const roles = (await getAll('pk', 'roles')).json
+    const isAdmin = roles.find((r:Role) => r.role_name === 'ADMIN').pk === user.role_pk
+    /**
+     * @role isAdmin
+     * @description {roles, users}
+     */
+    if (isAdmin) {
+      const users = (await getAllUser('USER')).json
+      const fUsers = users.map((u:User) => ({...u, role_name: roles.find((r: Role) => r.pk === u.role_pk).role_name, password: ''}))
+      dashboard.json = {
+        menus: [
+          ...defaultMenus,
+          {label: '全ショップ管理',href: '/all-shop'},
+        ],
+        admin: {
+          roles, 
+          users:fUsers,
+        }
+      }
+    }
+  } catch (error) {
+    dashboard = {status: 500, json: {menus:defaultMenus, error}}
+  }
+  return dashboard
+}

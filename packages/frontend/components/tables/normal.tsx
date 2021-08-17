@@ -89,6 +89,8 @@ const NormalTable: FC<Props> = (props) => {
         setModalContent(modalFormConfig.editModal.content)
         setModalFooter(<></>)
         setFormInitValues(d)
+        console.log(d);
+        
         onOpen()
     }
     const deleteHandler = (d:any) => {

@@ -9,6 +9,7 @@ import {
   updateUser,
   getAllUserInfo,
   registerUser,
+  getUserLatest,
 } from '../controllers/userController'
 import { protect, onlyPermit } from '../middleware/authMiddleware'
 
@@ -24,6 +25,12 @@ userRoutes.route('/')
 userRoutes.route('/all').get(protect, onlyPermit(permissions),getAllUserInfo)
 
 userRoutes.post('/login', authUser)
+
+/**
+ * @desc after user login this will be the request to take all the data that can be shown to user and stuff
+ * @exception non login user
+ */
+userRoutes.route('/latest').get(protect, getUserLatest)
 
 /**
  * @desc MAKE SURE THIS IS LAST BECAUSE /:id WILL GET EVERYTHING

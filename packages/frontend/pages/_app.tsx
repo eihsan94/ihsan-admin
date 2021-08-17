@@ -4,15 +4,18 @@ import { ChakraProvider } from "@chakra-ui/react"
 import { Provider } from 'next-auth/client'
 import theme from 'styles/theme'
 import { FormContextProvider } from 'contexts/FormContext'
+import { AppContextProvider } from 'contexts/AppContext'
 
 function MyApp({ Component, pageProps }: AppProps) {
   
   return (
     <ChakraProvider theme={theme}>
       <Provider session={pageProps.session}>
-        <FormContextProvider>
-            <Component {...pageProps} />
-        </FormContextProvider>
+        <AppContextProvider>
+          <FormContextProvider>
+              <Component {...pageProps} />
+          </FormContextProvider>
+        </AppContextProvider>
       </Provider>
       </ChakraProvider>
   )

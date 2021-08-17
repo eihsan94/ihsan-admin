@@ -2,7 +2,6 @@ import { PermissionType } from '../../../../../lib/@types/enums'
 import express from 'express'
 const roleRoutes = express.Router()
 import {
-  getAdminDashboard,
   getRoles,
   getRoleById,
   deleteRole,
@@ -25,12 +24,6 @@ const permissions: PermissionType[] = [PermissionType.CAN_EDIT_ROLE, PermissionT
 roleRoutes.route('/')
   .post(protect, onlyPermit(permissions),registerRole)
   .get(protect, onlyPermit(permissions), getRoles)
-
-/**
- * @desc ADMIN DATA
- */
- roleRoutes.route('/admin')
- .get(protect, onlyPermit(permissions), getAdminDashboard)
  
 /**
  * @desc MAKE SURE THIS IS LAST BECAUSE /:id WILL GET EVERYTHING
