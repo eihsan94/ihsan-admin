@@ -10,9 +10,9 @@ export interface Menu {
 }
 export interface AppState {
     status?: number;
+    error?: any;
     json: {
         menus: Menu[];
-        error?: any;
         admin?: {
             roles: Role[];
             users: User[];

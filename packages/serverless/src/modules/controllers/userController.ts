@@ -189,7 +189,7 @@ const generateDashboard = async (user: User) => {
       }
     }
   } catch (error) {
-    dashboard = {status: 500, json: {menus:defaultMenus, error}}
+    dashboard = {status: 500, json: error}
   }
   return dashboard
 }

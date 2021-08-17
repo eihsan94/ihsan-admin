@@ -19,12 +19,13 @@ interface Props {
 }
 
 const Home:FC<Props> = ({userDashboard}) => {
+  
   const [session] = useSession()
   const [roles, setRoles] = useState<Role[] | null>(null)
   const [users, setUsers] = useState<User[] | null>(null)
   const {setInitialDataLists} = useFormContext()
-  const {setCurrentAppState, appState} = useAppContext()
-  const {admin} = userDashboard.json
+  const {setCurrentAppState} = useAppContext()
+  const {admin} = userDashboard.json || {admin: ''}
   
     useEffect(() => {
       setCurrentAppState(userDashboard)
@@ -55,6 +56,7 @@ const Home:FC<Props> = ({userDashboard}) => {
     }, [])
     return (
         <Layout>
+          {userDashboard.error && <div>{userDashboard.error}</div>}
           {session && <UserCard name={session.user!.name!} email={session.user!.email!} image={session.user!.image!}/>}
           {admin &&
             <>

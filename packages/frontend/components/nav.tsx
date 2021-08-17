@@ -33,15 +33,18 @@ import { useAppContext } from 'contexts/AppContext';
     const { isOpen, onToggle } = useDisclosure();
     const [session] = useSession()
     const [init, setInit] = useState(false)
+    const [isLoggingOut, setIsLoggingOut] = useState(false)
     
     useEffect(() => {
       setInit(true)
     },[])
     const authHandler = async() => {
+      setIsLoggingOut(true)
       if (session) {
         localStorage.clear()
         return await signOut()
       }
+      setIsLoggingOut(false)
       router.push('/auth')
     }
     return (
@@ -89,6 +92,7 @@ import { useAppContext } from 'contexts/AppContext';
               fontWeight={600}
               color={'white'}
               bg={'pink.400'}
+              isLoading={isLoggingOut}
               onClick={authHandler}
               _hover={{
                 bg: 'pink.300',
@@ -111,7 +115,7 @@ import { useAppContext } from 'contexts/AppContext';
     const linkHoverColor = useColorModeValue('gray.800', 'white');
     const popoverContentBgColor = useColorModeValue('white', 'gray.800');
     const {appState} = useAppContext()
-    const {menus} = appState.json
+    const {menus} = appState.json || {menus: []}
     
     return (
       <Stack direction={'row'} spacing={4}>
@@ -193,7 +197,7 @@ import { useAppContext } from 'contexts/AppContext';
   
   const MobileNav = () => {
     const {appState} = useAppContext()
-    const {menus} = appState.json
+    const {menus} = appState.json || {menus: []}
 
     return (
       <Stack
