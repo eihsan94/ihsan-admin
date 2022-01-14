@@ -6,7 +6,7 @@ const noAppendCookiesGetLists = async<T>(url: string, reqConfig?:AxiosRequestCon
     try {
         const {data} =  await axios.get(`/api/${url}`, reqConfig)
         return data
-    } catch (error) {
+    } catch (error: any) {
         return error.response
     }
 }
@@ -14,7 +14,7 @@ const getLists = async<T>(url: string, reqConfig?:AxiosRequestConfig): Promise<T
     try {
         const {data} =  await axios.get(`/api/${url}`, await appendAuth(reqConfig))
         return data
-    } catch (error) {
+    } catch (error: any) {
         return error.response
     }
 }
@@ -22,7 +22,7 @@ const getSingle = async<T>(url: string, reqConfig?:AxiosRequestConfig): Promise<
     try {
         const {data} =  await axios.get(`/api/${url}`, await appendAuth(reqConfig))
         return data
-    } catch (error) {
+    } catch (error: any) {
         return error.response
     }
 }
@@ -30,7 +30,7 @@ const postSingle = async<T>(url:string, body: T, reqConfig?:AxiosRequestConfig):
     try {
         const {data} =  await axios.post(`/api/${url}`, body, await appendAuth(reqConfig))
         return data
-    } catch (error) {
+    } catch (error: any) {
         return error.response
     }
 }
@@ -38,7 +38,7 @@ const updateSingle = async<T>(url: string, body: T, reqConfig?:AxiosRequestConfi
     try {
         const {data} =  await axios.put(`/api/${url}`, body, await appendAuth(reqConfig))
         return data
-    } catch (error) {
+    } catch (error: any) {
         return error.response
     }
 }
@@ -46,7 +46,7 @@ const deleteSingle = async<T>(url: string, reqConfig?:AxiosRequestConfig): Promi
     try {
         const {data, status} =  await axios.delete(`/api/${url}`, await appendAuth(reqConfig))
         return {message: data.message, status}
-    } catch (error) {
+    } catch (error: any) {
         return error.response
     }
 }
@@ -61,7 +61,7 @@ const login = async<T>(body: T, reqConfig?:AxiosRequestConfig): Promise<T> => {
     try {
         const {data} =  await axios.post(`/api/users/login`, body, reqConfig)
         return data
-    } catch (error) {
+    } catch (error: any) {
         return error.response
     }
 }
@@ -69,7 +69,7 @@ const signUp = async<T>(body: T, reqConfig?:AxiosRequestConfig): Promise<T> => {
     try {
         const {data} =  await axios.post(`/api/users/`, body, reqConfig)
         return data
-    } catch (error) {
+    } catch (error: any) {
         return error.response
     }
 }

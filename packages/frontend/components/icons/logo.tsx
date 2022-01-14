@@ -1,23 +1,19 @@
-import Image from 'next/image'
-import dogo from "@public/images/dogo.png"
+import { ImageProps, Image } from '@chakra-ui/react';
 
-interface Props {
+interface Props extends ImageProps {
 	width: string,
 	height: string,
-	className?: string,
 }
 
-const Logo: React.FC<Props> = ({
-	width = "18px",
-	height = "18px",
-	className,
-}) => {
+const Logo: React.FC<Props> = (props) => {
+	const {width, height} = props
 	return (
 		<Image
+			{...props}
 			width={width}
 			height={height}
-			className={className}
-			src={dogo}
+			src={'/images/dogo.png'}
+			fallbackSrc={'/images/dogo.png'}
 			alt="dogo.png"
 			placeholder="blur"
 		/>

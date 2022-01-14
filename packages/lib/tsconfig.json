@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "outDir": "dist",
+    "baseUrl": ".", // This must be specified if you want to specify "paths"
+    "paths": {
+      "@libTypes/*": ["../../lib/@types/*"],
+    },
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "types": [
+    "node"
+  ],
+  "include": [
+    "**/*.ts",
+    "*.ts"
+  ]
+}

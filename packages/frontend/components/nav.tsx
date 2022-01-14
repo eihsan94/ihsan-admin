@@ -13,6 +13,7 @@ import {
     PopoverContent,
     useColorModeValue,
     useDisclosure,
+    ButtonProps,
   } from '@chakra-ui/react';
   import {
     HamburgerIcon,
@@ -21,32 +22,53 @@ import {
     ChevronRightIcon,
   } from '@chakra-ui/icons';
 import Logo from './icons/logo';
-import { useEffect } from 'react';
+import { FC, useEffect } from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/dist/client/router';
-import { signOut, useSession } from 'next-auth/client';
+import { signOut, useSession } from 'next-auth/react';
 import { useAppContext } from 'contexts/AppContext';
 
 
-  export default function Nav() {
+  const AuthButton:FC<ButtonProps> = (props) => {
     const router = useRouter()
-    const { isOpen, onToggle } = useDisclosure();
-    const [session] = useSession()
-    const [init, setInit] = useState(false)
-    const [isLoggingOut, setIsLoggingOut] = useState(false)
-    
-    useEffect(() => {
-      setInit(true)
-    },[])
+
     const authHandler = async() => {
       setIsLoggingOut(true)
-      if (session) {
+      if (status === "authenticated") {
         localStorage.clear()
         return await signOut()
       }
       setIsLoggingOut(false)
       router.push('/auth')
     }
+    const {data: session, status} = useSession()
+    const [isLoggingOut, setIsLoggingOut] = useState(false)
+    return (
+      <Button
+        {...props}
+        fontSize={'sm'}
+        fontWeight={600}
+        color={'white'}
+        bg={'pink.400'}
+        isLoading={isLoggingOut}
+        onClick={authHandler}
+        _hover={{
+          bg: 'pink.300',
+        }}>
+          {session ? 'ログアウト' : 'ログイン・新規登録'}
+      </Button>
+    )
+  }
+
+  export default function Nav() {
+    const router = useRouter()
+    const { isOpen, onToggle } = useDisclosure();
+    const [init, setInit] = useState(false)
+    
+    useEffect(() => {
+      setInit(true)
+    },[])
+    
     return (
       <Box>
         <Flex
@@ -86,19 +108,7 @@ import { useAppContext } from 'contexts/AppContext';
             justify={'flex-end'}
             direction={'row'}
             spacing={6}>
-            <Button
-              display={{ base: 'none', md: 'inline-flex' }}
-              fontSize={'sm'}
-              fontWeight={600}
-              color={'white'}
-              bg={'pink.400'}
-              isLoading={isLoggingOut}
-              onClick={authHandler}
-              _hover={{
-                bg: 'pink.300',
-              }}>
-                {session ? 'ログアウト' : 'ログイン・新規登録'}
-            </Button>
+            <AuthButton display={{ base: 'none', md: 'inline-flex' }}/>
           </Stack>
         </Flex>
   
@@ -206,7 +216,8 @@ import { useAppContext } from 'contexts/AppContext';
         display={{ md: 'none' }}>
         {menus.map((navItem) => (
           <MobileNavItem key={navItem.label} {...navItem} />
-        ))}
+          ))}
+          <AuthButton display={{ base: 'inherit', md: 'none' }}/>
       </Stack>
     );
   };

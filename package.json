@@ -7,7 +7,8 @@
     "build": "yarn workspaces -t run build"
   },
   "devDependencies": {
-    "lerna": "^4.0.0"
+    "lerna": "^4.0.0",
+    "next-transpile-modules": "^9.0.0"
   },
   "workspaces": [
     "packages/*"

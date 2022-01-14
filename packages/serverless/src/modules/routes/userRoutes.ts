@@ -1,4 +1,5 @@
-import { PermissionType } from '../../../../../lib/@types/enums'
+
+import { PermissionType } from '@lib'
 import express from 'express'
 const userRoutes = express.Router()
 import {

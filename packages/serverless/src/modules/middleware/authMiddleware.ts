@@ -1,9 +1,8 @@
-import { PermissionType } from '@libTypes/enums'
-import { Role, User } from '@libTypes/types'
+
 import { Request } from 'express'
 import asyncHandler from 'express-async-handler'
-import { getAll } from '../utils/crudUtil'
-import jwt from 'jsonwebtoken'
+import { getAll, getAllUser, putSingleUser } from '../utils/crudUtil'
+import { PermissionType, Role, User } from '@lib'
 
 export interface IGetUserAuthInfoRequest extends Request {
   user: User // or any other type
@@ -14,36 +13,26 @@ export interface IGetUserAuthInfoRequest extends Request {
 
 // middleware for authentication
 const protect = asyncHandler(async (req: IGetUserAuthInfoRequest, res, next) => {
-  let token
-  const authorization = `${req.headers.authorization}`
-  if (
-    authorization && authorization.startsWith('Bearer')
-  ) {
-    try {
-      token = authorization.split(' ')[1]
-      console.log('your session token🔒', token);
-      const decoded = jwt.decode(token) as User
-      console.log(decoded);
-      const result = await getAll('email', decoded.email, '-user')
-      const user = result.json[0]
-      // IF USER NOT FOUND
-      if (!user) {
-        console.log('the provided token does not have user inside');
-        return res.status(401).json({error:'認証に失敗しました、ログインをもう一度行ってください😭'})
-
+  const {current_user_email} = req.headers
+  try {
+    const currentUser = (await getAllUser('USER')).json.filter((u:User) => u.email === current_user_email)[0]
+    const currentUserId = currentUser.id
+    const isLogin = (await getAllUser('SESSION')).json.filter((s:any) => s.userId === currentUserId).length > 0
+    if (isLogin) {
+      if (!currentUser.role_pk) { // if the user has no role update the user with role
+        currentUser.role_pk = (await getAll('pk', 'roles')).json.filter((r: Role) => r.role_name === 'USER')[0].pk
+        const result = await putSingleUser(currentUser.pk, currentUser.sk, [{key: 'role_pk', val: currentUser.role_pk}])
+        console.log(result);
       }
-      delete user.password
-      console.log('current user 🙋🏽', user);
-      req.user =  user
+      req.user = currentUser
       next()
-    } catch (error) {
-      console.error(error)
-      return res.status(401).json({error:'認証に失敗しました、ログインをもう一度行ってください😭'})
+    } else {
+      console.log(`the email provided: ${current_user_email} does not have user user session. It is not login`);
+      return res.status(401).json({error:`Failed to authenticate for ${current_user_email}. Please Login again😭`})
     }
-  }
-
-  if (!token) {
-    return res.status(401).json({error:'認証に失敗しました、ログインをもう一度行ってください😭'})
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({error:`This error is given while authenticating login session for ${current_user_email}: ${error}😭`})
   }
 })
 

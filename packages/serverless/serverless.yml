@@ -1,7 +1,7 @@
-service: ihsan-pay
+service: ihsan-admin
 
 plugins:
-  - serverless-webpack
+  - serverless-esbuild
   - serverless-offline
   - serverless-s3-local
   - serverless-dynamodb-local
@@ -18,7 +18,7 @@ custom:
       - X-Amz-User-Agent
       - If-Modified-Since
 
-  bucketName: ihsan-pay-${opt:stage}-bucket
+  bucketName: ihsan-admin-${opt:stage}-bucket
   s3:
     host: localhost
     directory: /tmp

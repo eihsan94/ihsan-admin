@@ -1,8 +1,9 @@
-import { AppState, Role, User } from '@libTypes/types'
+
 import expressAsyncHandler from 'express-async-handler'
-import { deleteSingle, getAll, getSingle, postSingle, putSingle, getAllUser, putSingleUser, deleteSingleUser } from '../utils/crudUtil'
+import { getAll, postSingle, getAllUser, putSingleUser, deleteSingleUser } from '../utils/crudUtil'
 import { encrypt, validatePassword } from '../utils/encryptionUtil'
 import * as uuid from 'uuid'
+import { AppState, Role, User } from '@lib'
 
 /**
  * @desc    Get all users
@@ -30,7 +31,7 @@ const getAllUserInfo = expressAsyncHandler(async ({res}) => {
  * @route   GET /api/users
  * @access  Private/Admin
 */
-const getUserLatest = expressAsyncHandler(async (req,res) => {
+const getUserLatest = expressAsyncHandler(async (req,res) => {  
   const dashboard = await generateDashboard((req as any).user)
   return res.status(dashboard.status).json(dashboard)
 })
@@ -75,7 +76,7 @@ const registerUser = expressAsyncHandler(async (req, res) => {
     image: user.image,
     birthday: user.birthday,
     type: 'USER',
-    ihsanPoint: user.ihsanPoint || 0,
+    userPoint: user.userPoint || 0,
     createdAt: timestamp,
     updatedAt: timestamp
   }
@@ -117,7 +118,7 @@ const updateUser = expressAsyncHandler(async (req, res) => {
     {key: 'nickname', val: user.nickname} ,
     {key: 'image', val: user.image} ,
     {key: 'birthday', val: user.birthday} ,
-    {key: 'ihsanPoint', val: user.ihsanPoint} ,
+    {key: 'userPoint', val: user.userPoint} ,
   ]
   const result = await putSingleUser(oldUser.pk, oldUser.sk, keyValArr)
   return res.status(result.status).json(result.json)
@@ -168,6 +169,7 @@ const generateDashboard = async (user: User) => {
   ]
   let dashboard: AppState = {status: 200, json: {menus: defaultMenus}}
   try {
+    
     const roles = (await getAll('pk', 'roles')).json
     const isAdmin = roles.find((r:Role) => r.role_name === 'ADMIN').pk === user.role_pk
     /**
@@ -175,8 +177,8 @@ const generateDashboard = async (user: User) => {
      * @description {roles, users}
      */
     if (isAdmin) {
-      const users = (await getAllUser('USER')).json
-      const fUsers = users.map((u:User) => ({...u, role_name: roles.find((r: Role) => r.pk === u.role_pk).role_name, password: ''}))
+      const users = (await getAllUser('USER')).json 
+      const fUsers = users.map((u:User) => ({...u, role_name: roles.find((r: Role) => r.pk === u.role_pk).role_name}))
       dashboard.json = {
         menus: [
           ...defaultMenus,

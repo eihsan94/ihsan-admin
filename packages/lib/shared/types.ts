@@ -32,7 +32,7 @@ export interface User {
     image?: string;
     password?: string; // currently we only enabled login with provider so this is null
     birthday?: string;
-    ihsanPoint?: number;
+    userPoint?: number;
     email: string;
 }
 
@@ -40,8 +40,6 @@ export interface Role {
     pk?: string;
     role_permissions: PermissionType[];
     role_name: string;
-    price?: number;
-    image?: string;
 }
 
 export interface ReservationTicket {

@@ -16,11 +16,12 @@ interface Props {
     id: string;
     type: InputTypes;
     dataListsKey?: string
+    inputChoices?: {name: any, val: any}[]
     placeholder?: string;
     setFieldValue: (field: string, value: any, shouldValidate?: boolean) => void;
 }
 
-const NormalInputs: FC<Props> = ({ field, id, type, placeholder, dataListsKey, setFieldValue}) => {    
+const NormalInputs: FC<Props> = ({ field, id, type, placeholder, inputChoices, setFieldValue}) => {    
     const checkBoxChanged =(value: ReactText[]) => {
         setFieldValue(field.name, value)
     }
@@ -28,8 +29,8 @@ const NormalInputs: FC<Props> = ({ field, id, type, placeholder, dataListsKey, s
         const value = evt.target.value
         setFieldValue(field.name, value)
     }
-    const {initDataLists} = useFormContext()
-    const lists = dataListsKey ? initDataLists.find(dl => dl.key === dataListsKey)?.val : []
+    // const {initDataLists} = useFormContext()
+    // const lists = dataListsKey ? initDataLists.find(dl => dl.key === dataListsKey)?.val : []
     return (
         <>
             {(
@@ -56,15 +57,15 @@ const NormalInputs: FC<Props> = ({ field, id, type, placeholder, dataListsKey, s
                 &&
                 <CheckboxGroup colorScheme="orange" defaultValue={field.value} onChange={checkBoxChanged}>
                     <Box pl="6">
-                        {lists?.map((d, i) => <Box key={i}><Checkbox value={d.val}>{d.name}</Checkbox></Box>)}
-                    {!lists && 'この項目のデータはまだございません'}
+                        {inputChoices?.map((d, i) => <Box key={i}><Checkbox value={d.val}>{d.name}</Checkbox></Box>)}
+                    {!inputChoices && 'この項目のデータはまだございません'}
                     </Box>
                 </CheckboxGroup>
             }
             {type === InputTypes.dropdown
                 &&
                 <Select colorScheme="orange" placeholder={placeholder} defaultValue={field.value} rounded="full" size="lg" h={16} onChange={dropdownChanged}>
-                    {lists?.map((d, i) => <option key={i} value={d.val}>{d.name}</option>)}
+                    {inputChoices?.map((d, i) => <option key={i} value={d.val}>{d.name}</option>)}
                 </Select>
             }
             {type === InputTypes.image

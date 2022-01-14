@@ -57,7 +57,7 @@
 //     name,
 //     image,
 //     birthday,
-//     ihsanPoint,
+//     userPoint,
 //    }: User = JSON.parse(event.body)
 //   const params = {
 //     TableName: process.env.DYNAMODB_TABLE,
@@ -70,7 +70,7 @@
 //       name,
 //       image,
 //       birthday,
-//       ihsanPoint,
+//       userPoint,
 //       createdAt: timestamp,
 //       updatedAt: timestamp
 //     }
@@ -93,7 +93,7 @@
 //       name,
 //       image,
 //       birthday,
-//       ihsanPoint,
+//       userPoint,
 //      }: User = JSON.parse(event.body)
 //     let imageUrl
 //     if (isBase64(image)) {

@@ -1,25 +1,33 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "noImplicitAny": true,
+    "experimentalDecorators": true,
+    "lib": ["es2019"],
+    "removeComments": true,
     "moduleResolution": "node",
-    "outDir": "dist",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "target": "es2017",
+    "outDir": "lib",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "emitDecoratorMetadata": true,
     "baseUrl": ".", // This must be specified if you want to specify "paths"
     "paths": {
-      "@libTypes/*": ["../../lib/@types/*"],
+      "@lib": ["../lib/index.ts"],
     },
   },
-  "exclude": [
-    "node_modules"
-  ],
   "types": [
     "node",
     "aws-sdk"
   ],
-  "include": [
-    "src/**/*",
-    "handler.ts"
+  "include": ["./**/*.ts"],
+  "exclude": [
+    "node_modules/**/*",
+    ".serverless/**/*",
+    ".webpack/**/*",
+    "_warmup/**/*",
+    ".vscode/**/*"
   ]
 }

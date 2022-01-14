@@ -1,22 +1,21 @@
-import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import { ChakraProvider } from "@chakra-ui/react"
-import { Provider } from 'next-auth/client'
 import theme from 'styles/theme'
 import { FormContextProvider } from 'contexts/FormContext'
 import { AppContextProvider } from 'contexts/AppContext'
+import { SessionProvider } from "next-auth/react"
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component,   pageProps: { session, ...pageProps }}: AppProps) {
   
   return (
     <ChakraProvider theme={theme}>
-      <Provider session={pageProps.session}>
+      <SessionProvider session={session}>
         <AppContextProvider>
           <FormContextProvider>
               <Component {...pageProps} />
           </FormContextProvider>
         </AppContextProvider>
-      </Provider>
+      </SessionProvider>
       </ChakraProvider>
   )
   

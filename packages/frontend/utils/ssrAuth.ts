@@ -1,4 +1,4 @@
-import { getSession } from "next-auth/client"
+import { getSession } from "next-auth/react"
 import Cookies from 'cookies'
 
 const redirectHome = async(context: any, otherProps?: any) => {
@@ -18,6 +18,7 @@ const redirectHome = async(context: any, otherProps?: any) => {
 const redirectAuth = async(context: any, otherProps?: any) => {
     const session = await getSession({req: context.req})
     const props = {session, ...otherProps}
+    
     return session 
         ? {props}
         : {

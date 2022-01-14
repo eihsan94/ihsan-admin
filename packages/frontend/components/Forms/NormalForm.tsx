@@ -16,6 +16,7 @@ export interface InputField {
     touched: any) => boolean, 
     errors: (errors: any) => any
     dataListsKey?: string;
+    inputChoices?: {name: any, val: any}[]
 }
 
 export interface NormalFormAPiHandler {
@@ -89,6 +90,7 @@ const NormalForm: FC<NormalFormProps> = ({inputFields, apiHandler, formSchema}) 
                                                     id={input.name}
                                                     placeholder={input.placeholder}
                                                     type={input.type} 
+                                                    inputChoices={input.inputChoices}
                                                     dataListsKey={input.dataListsKey}
                                                     setFieldValue={setFieldValue}
                                                 />

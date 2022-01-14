@@ -1,7 +1,7 @@
+import { Role } from '@lib'
 import expressAsyncHandler from 'express-async-handler'
-import {Role, User} from '@libTypes/types'
 import * as uuid from 'uuid'
-import { deleteSingle, getAll, getAllUser, getSingle, postSingle, putSingle } from '../utils/crudUtil'
+import { deleteSingle, getAll, getSingle, postSingle, putSingle } from '../utils/crudUtil'
 
 const partitionKeyPrefix = 'roles'
 
@@ -32,8 +32,6 @@ const registerRole = expressAsyncHandler(async (req, res) => {
     pk: `${uuid.v4()}-${partitionKeyPrefix}`,
     role_permissions: role.role_permissions,
     role_name: role.role_name,
-    price: role.price,
-    image: role.image,
     createdAt: timestamp,
     updatedAt: timestamp
   }
@@ -62,8 +60,6 @@ const updateRole = expressAsyncHandler(async (req, res) => {
   const keyValArr = [
     {key: 'role_permissions', val: role.role_permissions} ,
     {key: 'role_name', val: role.role_name} ,
-    {key: 'price', val: role.price} ,
-    {key: 'image', val: role.image} ,
   ]
   const result = await putSingle(id, keyValArr)
   return res.status(result.status).json(result.json)

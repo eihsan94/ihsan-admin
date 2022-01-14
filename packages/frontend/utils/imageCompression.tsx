@@ -24,7 +24,7 @@ const imageCompressionUtil = async(f: Blob) => { // f is event.target.files[0]
       console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
       console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
       return compressedFile;
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(error);
     }
 }

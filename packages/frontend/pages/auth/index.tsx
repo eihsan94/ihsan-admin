@@ -6,8 +6,6 @@ import {
     Text,
     Container,
     SimpleGrid,
-    Avatar,
-    AvatarGroup,
     useBreakpointValue,
     IconProps,
     Icon,
@@ -16,26 +14,11 @@ import {
   } from '@chakra-ui/react';
 import Logo from '@components/icons/logo';
 import { redirectHome } from '@utils/ssrAuth';
+import { APP_NAME } from 'config';
 import { GetServerSideProps } from 'next';
 import AuthForm from '../../components/Forms/AuthForm'
-// import Image from 'next/image'
-  const avatars = [
-    {
-      name: 'ななみ',
-      url: '/images/nanami.jpg',
-    },
-    {
-      name: '陽介',
-      url: '/images/yousuke.jpg',
-    },
-    {
-      name: 'イサン',
-      url: '/images/ihsan.jpg',
-    },
-    
-  ];
-  export default function Index() {
-    const bpVal =  useBreakpointValue({ base: 'md', md: 'lg' })
+
+export default function Index() {
     const colorMode =  useColorModeValue('red.50', 'red.400')
     const LoginImage = "/images/loginImage.jpeg";
     
@@ -51,61 +34,31 @@ import AuthForm from '../../components/Forms/AuthForm'
             <Heading>
                 <Flex alignItems="flex-end">
                     <Text fontSize={{ base: '4xl', sm: '5xl', md: '6xl', lg: '7xl' }}>
-                        イサンぺイ
+                        {APP_NAME}
                     </Text>
                     <Logo width="100px" height="100px" />
                 </Flex>
                 <Text color={'gray.500'}　fontSize={{ base: '2xl', sm: '3xl', md: '4xl', lg: '4xl' }}>
-                    オンライン決済を簡単にする
+                    Make user management easy to manage
                 </Text>
             </Heading>
             <Stack direction={'row'} spacing={4} align={'center'} flexWrap="wrap">
-            　　<Text fontSize={{ base: 'sm', sm: 'md' }}　w="full" mb="4" color={'gray.500'}>
-            　　    今、イサンぺイを使っているクライアント達
-            　　</Text>
-              <div>
-                
-                <AvatarGroup>
-                  {avatars.map((avatar) => (
-                    <Avatar
-                      key={avatar.name}
-                      name={avatar.name}
-                      src={avatar.url}
-                      size={bpVal}
-                      position={'relative'}
-                      zIndex={2}
-                      _before={{
-                        content: '""',
-                        width: 'full',
-                        height: 'full',
-                        rounded: 'full',
-                        transform: 'scale(1.125)',
-                        bgGradient: 'linear(to-bl, red.400,pink.400)',
-                        position: 'absolute',
-                        zIndex: -1,
-                        top: 0,
-                        left: 0,
-                      }}
-                    />
-                  ))}
-                </AvatarGroup>
-                <Box
-                  mt="5"
-                  h={{base: '100px', md: '300px'}}
-                  w={{base: '200px', md: 'full'}}
-                  rounded={'2xl'}
-                  boxShadow={'2xl'}
-                  overflow={'hidden'}>
-                  <Image
-                    alt={'Hero Image'}
-                    fit={'cover'}
-                    w={'100%'}
-                    h={'100%'}
-                    src={LoginImage}
-                    fallbackSrc={LoginImage}
-                  />
-                </Box>
-              </div>
+              <Box
+                mt="5"
+                h={{base: '100px', md: '300px'}}
+                w={{base: '200px', md: 'full'}}
+                rounded={'2xl'}
+                boxShadow={'2xl'}
+                overflow={'hidden'}>
+                <Image
+                  alt={'Hero Image'}
+                  fit={'cover'}
+                  w={'100%'}
+                  h={'100%'}
+                  src={LoginImage}
+                  fallbackSrc={LoginImage}
+                />
+              </Box>
             </Stack>
           </Stack>
           <Stack
@@ -125,11 +78,11 @@ import AuthForm from '../../components/Forms/AuthForm'
                   as={'span'}
                   bgGradient="linear(to-r, red.400,pink.400)"
                   bgClip="text">
-                  簡単な決済、ここから!
+                  {APP_NAME}!
                 </Text>
               </Heading>
               <Text color={'gray.500'} fontSize={{ base: 'sm', sm: 'md' }}>
-                あなたのビジネス決済を簡単にしましょう！
+                Your journey begin here 😉
               </Text>
             </Stack>
             <AuthForm />

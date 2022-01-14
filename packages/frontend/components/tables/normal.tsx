@@ -17,13 +17,19 @@ import {
     Spinner,
     useToast,
   } from "@chakra-ui/react"
+import { InputField } from "@components/Forms/NormalForm"
 import NormalModal from "@components/modals/normal-modal"
 import { deleteSingle, postSingle, updateSingle } from "@utils/crudUtil"
 import { AxiosRequestConfig } from "axios"
 import { useFormContext } from "contexts/FormContext"
 import React, { FC, useState } from "react"
 import { useEffect } from "react"
+import * as Yup from 'yup';
 
+export interface TableFormConfig<T> {
+    formSchema: Yup.SchemaOf<T>,
+    inputFields: InputField[],
+}
 export interface TableConfig {
     th: string[];
     td: {type: 'string'| 'image', val: string | number}[];
