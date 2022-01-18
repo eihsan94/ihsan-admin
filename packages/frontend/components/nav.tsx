@@ -125,7 +125,7 @@ import { useAppContext } from 'contexts/AppContext';
     const linkHoverColor = useColorModeValue('gray.800', 'white');
     const popoverContentBgColor = useColorModeValue('white', 'gray.800');
     const {appState} = useAppContext()
-    const {menus} = appState.json || {menus: []}
+    const {menus} = appState
     
     return (
       <Stack direction={'row'} spacing={4}>
@@ -207,7 +207,7 @@ import { useAppContext } from 'contexts/AppContext';
   
   const MobileNav = () => {
     const {appState} = useAppContext()
-    const {menus} = appState.json || {menus: []}
+    const {menus} = appState
 
     return (
       <Stack

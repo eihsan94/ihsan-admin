@@ -1,11 +1,20 @@
-import NormalForm, { InputField } from '@components/Forms/NormalForm'
-import { postSingle, updateSingle } from '@utils/crudUtil'
-import React from 'react'
-import NormalTable, { NormalTableConfig, TableFormConfig } from './normal'
+import { getLists, postSingle, updateSingle } from '@utils/crudUtil'
+import React, { useState } from 'react'
 import * as Yup from 'yup';
 import { InputTypes } from '@components/Inputs'
 import { PermissionType, Role } from '@lib';
+import MainTable, { MainTableConfig, TableFormConfig } from './mainTable';
+import { InputChoice } from 'contexts/FormContext';
+import { useAppContext } from 'contexts/AppContext';
 
+
+export const RoleChoices: InputChoice[] = [
+    {name: PermissionType.ALL, val: PermissionType.ALL},
+    {name: PermissionType.CAN_EDIT_ROLE, val: PermissionType.CAN_EDIT_ROLE},
+    {name: PermissionType.CAN_EDIT_USER, val: PermissionType.CAN_EDIT_USER},
+    {name: PermissionType.CAN_SEE_ANALYTICS, val: PermissionType.CAN_SEE_ANALYTICS},
+    {name: PermissionType.CAN_EDIT_PROFILE, val: PermissionType.CAN_EDIT_PROFILE},
+]
 
 /**
  * @description the schema for form input validation
@@ -31,11 +40,7 @@ const tableFormConfig: TableFormConfig<Role> = {
         {
             name: 'role_permissions', 
             label: '権限範囲',
-            inputChoices: [
-                {name: PermissionType.ALL, val: PermissionType.ALL},
-                {name: PermissionType.CAN_EDIT_PROFILE, val: PermissionType.CAN_EDIT_PROFILE},
-                {name: PermissionType.CAN_EDIT_PROFILE, val: PermissionType.CAN_EDIT_PROFILE},
-            ],
+            inputChoices: RoleChoices,
             type: InputTypes.checkbox,
             isInvalid: (errors: any, touched: any) => !!(errors.role_permissions && touched.role_permissions),
             errors: (errors: any) => errors.role_permissions,
@@ -45,9 +50,9 @@ const tableFormConfig: TableFormConfig<Role> = {
 }
 
 /**
- * @description the Role table config
- */
-const RoleConfig: NormalTableConfig = {
+     * @description the Role table config
+     */
+ const RoleConfig: MainTableConfig = {
     caption: "ROLE TABLE",
     tableConfig: {
         th: ['権限名', '権限範囲'],
@@ -57,15 +62,31 @@ const RoleConfig: NormalTableConfig = {
         ],
     },
     modalFormConfig: {
-        addModal: {title: () => `権限を追加します`, content: <NormalForm apiHandler={{fn: postSingle, url: () => 'roles'}} formSchema={tableFormConfig.formSchema} inputFields={tableFormConfig.inputFields} />},
-        editModal: {title: (d: Role) => `${d.role_name}`, content: <NormalForm apiHandler={{fn: updateSingle, url: (d: Role) => `roles/${d.pk}`}} formSchema={tableFormConfig.formSchema} inputFields={tableFormConfig.inputFields} />},
-        deleteModal: {title: (d: Role) => `${d.role_name}`},
-    },
-    tableCrudConfig: {
-        deleteApi: {url: (d: Role) => `roles/${d.pk}`},
+        addModal: {
+            title: () => `権限を追加します`, 
+            formConfig: {
+                apiHandler: {
+                    fn: postSingle,
+                    url: () => 'roles',
+                },
+                formSchema: tableFormConfig.formSchema,
+                inputFields: tableFormConfig.inputFields,
+            },
+        },
+        editModal: {
+            title: (d: Role) => `${d.role_name}`, 
+            formConfig: {
+                apiHandler:{fn: updateSingle, url: (d: Role) => `roles/${d.pk}`}, 
+                formSchema:tableFormConfig.formSchema,
+                inputFields:tableFormConfig.inputFields,
+            }
+        },
+        deleteModal: {
+            title: (d: Role) => `${d.role_name}`,
+            url: (d: Role) => `roles/${d.pk}`,
+        },
     },
 }
-
 
 /**
  * @description THE MAIN COMPONENT
@@ -75,7 +96,17 @@ interface Props {
 }
 
 export default function RoleTable({roles}: Props) {
+    const [tableData, setTableData] = useState<Role[]>(roles);
+    const {setCurrentAppState, appState} = useAppContext()
+    const fetchNewDataHandler = async() => {
+        const data = await getLists<Role[]>('roles')
+        setTableData(data)
+        const newState = {...appState}
+        newState.roles = data
+        setCurrentAppState(newState)
+    }
+
     return (
-        <NormalTable config={RoleConfig} data={roles} />
+        <MainTable config={RoleConfig} data={tableData} submitFormCallBack={fetchNewDataHandler}/>
     )
 }

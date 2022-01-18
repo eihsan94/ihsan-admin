@@ -70,14 +70,24 @@ export const postBatch = async(RequestItems: any, tablePrefix?: string): Promise
   return res;
 }
 
-export const putSingle = async(pk: string, keyValArr: {key: string, val: any, alwaysUpdate?: boolean}[], tablePrefix?: string): Promise<CrudResponse> => {
+export const putSingle = async(pk: string, keyValArr: {key: string, val: any, alwaysUpdate?: boolean, isReservedKeyword?: boolean}[], tablePrefix?: string): Promise<CrudResponse> => {
   const updatedAttributes = [];
   const expressionAttributeValues: any = {};
+  let expressionAttributeNames: any = null;
+  
   
   keyValArr.map(attr => {
-    if (attr.val || attr.alwaysUpdate || typeof attr.val === 'number') {
-      updatedAttributes.push(`${attr.key} = :${attr.key}`);
-      expressionAttributeValues[`:${attr.key}`] = attr.val;
+    if (attr.val || attr.alwaysUpdate) {
+      if (attr.isReservedKeyword) {
+        expressionAttributeNames = {}
+        const tempKey = `:${attr.key.replace("#", "")}1`
+        updatedAttributes.push(`${attr.key} = ${tempKey}`);
+        expressionAttributeValues[`${tempKey}`] = attr.val;
+        expressionAttributeNames[`${attr.key}`] = attr.key.replace("#", "");
+      } else {
+        updatedAttributes.push(`${attr.key} = :${attr.key}`);
+        expressionAttributeValues[`:${attr.key}`] = attr.val;
+      }
     }
   })
   
@@ -85,13 +95,22 @@ export const putSingle = async(pk: string, keyValArr: {key: string, val: any, al
   expressionAttributeValues[':updated'] = new Date().toISOString();
   const updateExpression = `set ${updatedAttributes.join(', ')}`;
   
-  const params = {
+  const p = {
     TableName: `${tablePrefix ? process.env.DYNAMODB_TABLE + tablePrefix : process.env.DYNAMODB_TABLE}`,
     Key: { pk},
     UpdateExpression: updateExpression,
     ExpressionAttributeValues: expressionAttributeValues,
     ReturnValues: 'ALL_NEW',
   };
+  
+  const params = 
+    expressionAttributeNames 
+    ? {
+      ...p,
+      ExpressionAttributeNames: expressionAttributeNames,
+    }
+    : p 
+    
   
   let res = {json: {}, status: 201};
   
@@ -129,7 +148,7 @@ export const deleteSingle = async(pk: string, tablePrefix?: string): Promise<Cru
 }
 
 // this request needs to make like this because it uses reserved attributes name
-export const getAllUser = async(type: 'ACCOUNT' | 'SESSION' | 'USER' | ''): Promise<CrudResponse> => {
+export const getAllUser = async(type: 'oauth' | 'SESSION' | 'USER' | ''): Promise<CrudResponse> => {
   const params = {
       TableName: `${process.env.DYNAMODB_TABLE}-user`,
       FilterExpression: `contains(#user_type,:key)`,
@@ -151,14 +170,22 @@ export const getAllUser = async(type: 'ACCOUNT' | 'SESSION' | 'USER' | ''): Prom
 }
 
 // BECAUSE THIS REQUIRES in keys PK AND SK
-export const putSingleUser = async(pk: string, sk: string, keyValArr: {key: string, val: any, alwaysUpdate?: boolean}[]): Promise<CrudResponse> => {
+export const putSingleUser = async(pk: string, sk: string, keyValArr: {key: string, val: any, alwaysUpdate?: boolean, isReservedKeyword?: boolean}[]): Promise<CrudResponse> => {
   const updatedAttributes = [];
   const expressionAttributeValues: any = {};
-  
+  let expressionAttributeNames: any = null;
   keyValArr.map(attr => {
     if (attr.val || attr.alwaysUpdate) {
-      updatedAttributes.push(`${attr.key} = :${attr.key}`);
-      expressionAttributeValues[`:${attr.key}`] = attr.val;
+      if (attr.isReservedKeyword) {
+        expressionAttributeNames = {}
+        const tempKey = `:${attr.key.replace("#", "")}1`
+        updatedAttributes.push(`${attr.key} = ${tempKey}`);
+        expressionAttributeValues[`${tempKey}`] = attr.val;
+        expressionAttributeNames[`${attr.key}`] = attr.key.replace("#", "");
+      } else {
+        updatedAttributes.push(`${attr.key} = :${attr.key}`);
+        expressionAttributeValues[`:${attr.key}`] = attr.val;
+      }
     }
   })
   
@@ -166,7 +193,7 @@ export const putSingleUser = async(pk: string, sk: string, keyValArr: {key: stri
   expressionAttributeValues[':updated'] = new Date().toISOString();
   const updateExpression = `set ${updatedAttributes.join(', ')}`;
   
-  const params = {
+  const p = {
     TableName: `${process.env.DYNAMODB_TABLE}-user`,
     Key: { 
       pk,
@@ -176,6 +203,15 @@ export const putSingleUser = async(pk: string, sk: string, keyValArr: {key: stri
     ExpressionAttributeValues: expressionAttributeValues,
     ReturnValues: 'ALL_NEW',
   };
+  
+  const params = 
+    expressionAttributeNames 
+    ? {
+      ...p,
+      ExpressionAttributeNames: expressionAttributeNames,
+    }
+    : p 
+    
   
   let res = {json: {}, status: 201};
   

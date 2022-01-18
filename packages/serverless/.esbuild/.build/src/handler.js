@@ -26441,22 +26441,34 @@ var postSingle = async (Item, tablePrefix) => {
 var putSingle = async (pk, keyValArr, tablePrefix) => {
   const updatedAttributes = [];
   const expressionAttributeValues = {};
+  let expressionAttributeNames = null;
   keyValArr.map((attr) => {
-    if (attr.val || attr.alwaysUpdate || typeof attr.val === "number") {
-      updatedAttributes.push(`${attr.key} = :${attr.key}`);
-      expressionAttributeValues[`:${attr.key}`] = attr.val;
+    if (attr.val || attr.alwaysUpdate) {
+      if (attr.isReservedKeyword) {
+        expressionAttributeNames = {};
+        const tempKey = `:${attr.key.replace("#", "")}1`;
+        updatedAttributes.push(`${attr.key} = ${tempKey}`);
+        expressionAttributeValues[`${tempKey}`] = attr.val;
+        expressionAttributeNames[`${attr.key}`] = attr.key.replace("#", "");
+      } else {
+        updatedAttributes.push(`${attr.key} = :${attr.key}`);
+        expressionAttributeValues[`:${attr.key}`] = attr.val;
+      }
     }
   });
   updatedAttributes.push(`updated = :updated`);
   expressionAttributeValues[":updated"] = new Date().toISOString();
   const updateExpression = `set ${updatedAttributes.join(", ")}`;
-  const params = {
+  const p = {
     TableName: `${tablePrefix ? process.env.DYNAMODB_TABLE + tablePrefix : process.env.DYNAMODB_TABLE}`,
     Key: { pk },
     UpdateExpression: updateExpression,
     ExpressionAttributeValues: expressionAttributeValues,
     ReturnValues: "ALL_NEW"
   };
+  const params = expressionAttributeNames ? __spreadProps(__spreadValues({}, p), {
+    ExpressionAttributeNames: expressionAttributeNames
+  }) : p;
   let res = { json: {}, status: 201 };
   try {
     const { Attributes } = await dynamoDb.update(params).promise();
@@ -26509,16 +26521,25 @@ var getAllUser = async (type) => {
 var putSingleUser = async (pk, sk, keyValArr) => {
   const updatedAttributes = [];
   const expressionAttributeValues = {};
+  let expressionAttributeNames = null;
   keyValArr.map((attr) => {
     if (attr.val || attr.alwaysUpdate) {
-      updatedAttributes.push(`${attr.key} = :${attr.key}`);
-      expressionAttributeValues[`:${attr.key}`] = attr.val;
+      if (attr.isReservedKeyword) {
+        expressionAttributeNames = {};
+        const tempKey = `:${attr.key.replace("#", "")}1`;
+        updatedAttributes.push(`${attr.key} = ${tempKey}`);
+        expressionAttributeValues[`${tempKey}`] = attr.val;
+        expressionAttributeNames[`${attr.key}`] = attr.key.replace("#", "");
+      } else {
+        updatedAttributes.push(`${attr.key} = :${attr.key}`);
+        expressionAttributeValues[`:${attr.key}`] = attr.val;
+      }
     }
   });
   updatedAttributes.push(`updated = :updated`);
   expressionAttributeValues[":updated"] = new Date().toISOString();
   const updateExpression = `set ${updatedAttributes.join(", ")}`;
-  const params = {
+  const p = {
     TableName: `${process.env.DYNAMODB_TABLE}-user`,
     Key: {
       pk,
@@ -26528,6 +26549,9 @@ var putSingleUser = async (pk, sk, keyValArr) => {
     ExpressionAttributeValues: expressionAttributeValues,
     ReturnValues: "ALL_NEW"
   };
+  const params = expressionAttributeNames ? __spreadProps(__spreadValues({}, p), {
+    ExpressionAttributeNames: expressionAttributeNames
+  }) : p;
   let res = { json: {}, status: 201 };
   try {
     const { Attributes } = await dynamoDb.update(params).promise();
@@ -26562,11 +26586,6 @@ var deleteSingleUser = async (id) => {
 
 // src/modules/utils/encryptionUtil.ts
 var import_bcryptjs = __toESM(require_bcryptjs());
-var encrypt = async (str) => {
-  const salt = await import_bcryptjs.default.genSalt(10);
-  const hashed = await import_bcryptjs.default.hash(str, salt);
-  return hashed;
-};
 var validatePassword = async (enteredPassword, userPassword) => {
   return await import_bcryptjs.default.compare(enteredPassword, userPassword);
 };
@@ -26574,16 +26593,26 @@ var validatePassword = async (enteredPassword, userPassword) => {
 // src/modules/controllers/userController.ts
 var uuid = __toESM(require_uuid());
 var getUsers = (0, import_express_async_handler.default)(async ({ res }) => {
-  const result = await getAllUser("USER");
-  return res.status(result.status).json(result.json);
+  try {
+    const users = (await getAllUser("USER")).json;
+    const roles = (await getAll("pk", "roles")).json;
+    const fUsers = users.map((u) => __spreadProps(__spreadValues({}, u), { role_name: roles.find((r) => r.pk === u.role_pk).role_name }));
+    return res.status(200).json(fUsers);
+  } catch (error) {
+    return res.status(500).json({ error });
+  }
 });
 var getAllUserInfo = (0, import_express_async_handler.default)(async ({ res }) => {
   const result = await getAllUser("");
   return res.status(result.status).json(result.json);
 });
 var getUserLatest = (0, import_express_async_handler.default)(async (req, res) => {
-  const dashboard = await generateDashboard(req.user);
-  return res.status(dashboard.status).json(dashboard);
+  try {
+    const dashboard = await generateDashboard(req.user);
+    return res.status(dashboard.status).json(dashboard);
+  } catch (error) {
+    return res.status(error.status).json({ error });
+  }
 });
 var getUserById = (0, import_express_async_handler.default)(async (req, res) => {
   const result = await getAll("id", req.params.id, "-user");
@@ -26604,21 +26633,20 @@ var registerUser = (0, import_express_async_handler.default)(async (req, res) =>
     pk: `USER#${id}`,
     sk: `USER#${id}`,
     id,
+    notLinked: true,
     role_pk: user.role_pk,
-    shop_pks: user.pk,
     email: user.email,
-    password: await encrypt(user.password),
-    nickname: user.nickname,
-    name: user.nickname,
-    image: user.image,
-    birthday: user.birthday,
+    name: user.name,
     type: "USER",
-    userPoint: user.userPoint || 0,
     createdAt: timestamp,
     updatedAt: timestamp
   };
-  const result = await postSingle(Item, "-user");
-  return res.status(result.status).json(result.json);
+  try {
+    await postSingle(Item, "-user");
+    return res.status(200).json({ message: "user created" });
+  } catch (error) {
+    return res.status(error.status).json(error);
+  }
 });
 var deleteUser = (0, import_express_async_handler.default)(async (req, res) => {
   const id = req.params.id;
@@ -26632,14 +26660,13 @@ var updateUser = (0, import_express_async_handler.default)(async (req, res) => {
     return res.status(422).json({ error: `\u3053\u306E\u30E6\u30FC\u30B6\u30FC\u306F\u5B58\u5728\u3057\u307E\u305B\u3093` });
   }
   const user = req.body;
-  const hashedPassword = user.password ? await encrypt(user.password) : "";
   console.log(oldUser);
   const keyValArr = [
     { key: "role_pk", val: user.role_pk },
     { key: "shop_pks", val: user.shop_pks },
     { key: "email", val: user.email },
-    { key: "password", val: hashedPassword },
     { key: "nickname", val: user.nickname },
+    { key: "#name", val: user.name, isReservedKeyword: true },
     { key: "image", val: user.image },
     { key: "birthday", val: user.birthday },
     { key: "userPoint", val: user.userPoint }
@@ -26676,7 +26703,11 @@ var generateDashboard = async (user) => {
     const isAdmin = roles.find((r) => r.role_name === "ADMIN").pk === user.role_pk;
     if (isAdmin) {
       const users = (await getAllUser("USER")).json;
-      const fUsers = users.map((u) => __spreadProps(__spreadValues({}, u), { role_name: roles.find((r) => r.pk === u.role_pk).role_name }));
+      const fUsers = users.map((u) => {
+        const currRole = roles.find((r) => r.pk === u.role_pk);
+        const role_name = currRole ? currRole.role_name : u.role_pk;
+        return __spreadProps(__spreadValues({}, u), { role_name });
+      });
       dashboard.json = {
         menus: [
           ...defaultMenus,
@@ -26699,15 +26730,11 @@ var import_express_async_handler2 = __toESM(require_express_async_handler());
 var protect = (0, import_express_async_handler2.default)(async (req, res, next) => {
   const { current_user_email } = req.headers;
   try {
-    const currentUser = (await getAllUser("USER")).json.filter((u) => u.email === current_user_email)[0];
+    let currentUser = await searchCurrentUser(current_user_email);
     const currentUserId = currentUser.id;
     const isLogin = (await getAllUser("SESSION")).json.filter((s) => s.userId === currentUserId).length > 0;
     if (isLogin) {
-      if (!currentUser.role_pk) {
-        currentUser.role_pk = (await getAll("pk", "roles")).json.filter((r) => r.role_name === "USER")[0].pk;
-        const result = await putSingleUser(currentUser.pk, currentUser.sk, [{ key: "role_pk", val: currentUser.role_pk }]);
-        console.log(result);
-      }
+      currentUser = await checkUserRole(currentUser);
       req.user = currentUser;
       next();
     } else {
@@ -26736,6 +26763,30 @@ var onlyPermit = (permissionTypes) => {
       return res.status(401).json({ error: `You are not authorized. Only user with ${permissionTypes} role is permitted` });
     }
   });
+};
+var searchCurrentUser = async (current_user_email) => {
+  let currentUser;
+  const currUsers = (await getAllUser("USER")).json.filter((u) => u.email === current_user_email);
+  if (currUsers.length > 1) {
+    const nonGoogleUsers = currUsers.find((u) => u.notLinked === true);
+    const { role_pk } = nonGoogleUsers;
+    currentUser = currUsers.find((u) => !u.notLinked);
+    currentUser.role_pk = role_pk;
+    console.log("iF THE ADMIN ALREADY MAKE THE USER", currentUser);
+    await putSingleUser(currentUser.pk, currentUser.sk, [{ key: "role_pk", val: currentUser.role_pk }]);
+    await deleteSingleUser(nonGoogleUsers.id);
+  } else {
+    currentUser = (await getAllUser("USER")).json.filter((u) => u.email === current_user_email)[0];
+  }
+  return currentUser;
+};
+var checkUserRole = async (currentUser) => {
+  if (!currentUser.role_pk) {
+    currentUser.role_pk = (await getAll("pk", "roles")).json.filter((r) => r.role_name === "USER")[0].pk;
+    const result = await putSingleUser(currentUser.pk, currentUser.sk, [{ key: "role_pk", val: currentUser.role_pk }]);
+    console.log(result);
+  }
+  return currentUser;
 };
 
 // src/modules/routes/userRoutes.ts

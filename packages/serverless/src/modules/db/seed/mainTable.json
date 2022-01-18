@@ -11,7 +11,7 @@
     {
         "pk": "eafd24e0-c0ee-4d98-b639-b46cce5dc73d-roles",
         "role_permissions": [
-            "USER"
+            "CAN_EDIT_PROFILE"
         ],
         "role_name": "USER",
         "createdAt": 1628513014053,

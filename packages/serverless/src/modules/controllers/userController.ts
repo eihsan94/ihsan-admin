@@ -1,9 +1,9 @@
 
 import expressAsyncHandler from 'express-async-handler'
 import { getAll, postSingle, getAllUser, putSingleUser, deleteSingleUser } from '../utils/crudUtil'
-import { encrypt, validatePassword } from '../utils/encryptionUtil'
+import {  validatePassword } from '../utils/encryptionUtil'
 import * as uuid from 'uuid'
-import { AppState, Role, User } from '@lib'
+import { Role, User, UserDashboard } from '@lib'
 
 /**
  * @desc    Get all users
@@ -11,8 +11,14 @@ import { AppState, Role, User } from '@lib'
  * @access  Private/Admin
 */
 const getUsers = expressAsyncHandler(async ({res}) => {
-  const result = await getAllUser('USER')
-  return res.status(result.status).json(result.json)
+  try {
+    const users = (await getAllUser('USER')).json
+    const roles = (await getAll('pk', 'roles')).json
+    const fUsers = users.map((u:User) => ({...u, role_name: roles.find((r: Role) => r.pk === u.role_pk).role_name}))
+    return res.status(200).json(fUsers)
+  } catch (error) {
+    return res.status(500).json({error})
+  }
 })
 
 
@@ -31,9 +37,13 @@ const getAllUserInfo = expressAsyncHandler(async ({res}) => {
  * @route   GET /api/users
  * @access  Private/Admin
 */
-const getUserLatest = expressAsyncHandler(async (req,res) => {  
-  const dashboard = await generateDashboard((req as any).user)
-  return res.status(dashboard.status).json(dashboard)
+const getUserLatest = expressAsyncHandler(async (req,res) => {
+  try {
+    const dashboard = await generateDashboard((req as any).user)
+    return res.status(dashboard.status).json(dashboard)
+  } catch (error) {
+    return res.status(error.status).json({error})
+  }
 })
 
 /**
@@ -62,26 +72,27 @@ const registerUser = expressAsyncHandler(async (req, res) => {
     const isRegisteredWithGoogle = users.filter((u: User) => u.GSI1PK).length > 0
     return res.status(400).json({error: isRegisteredWithGoogle ?  `このメールはすでにgoogleで登録されたので, googleでログインしてください` : `このメールはすでに登録されています。`})
   }
+  
   const id= uuid.v4()
   const Item = {
     pk: `USER#${id}`,
     sk: `USER#${id}`,
-    id, 
+    id,
+    notLinked: true,
     role_pk: user.role_pk,
-    shop_pks: user.pk,
     email: user.email,
-    password: await encrypt(user.password),
-    nickname: user.nickname,
-    name: user.nickname,
-    image: user.image,
-    birthday: user.birthday,
+    name: user.name,
     type: 'USER',
-    userPoint: user.userPoint || 0,
     createdAt: timestamp,
     updatedAt: timestamp
   }
-  const result = await postSingle(Item, '-user')
-  return res.status(result.status).json(result.json)
+  try {
+    await postSingle(Item, '-user')
+    // await postSingle(OAuthItem, '-user')
+    return res.status(200).json({message:"user created"})
+  } catch (error) {
+    return res.status(error.status).json(error)
+  }
 })
 
 /**
@@ -107,15 +118,14 @@ const updateUser = expressAsyncHandler(async (req, res) => {
     return res.status(422).json({error: `このユーザーは存在しません`})
   }
   const user: User = req.body
-  const hashedPassword = user.password ? await encrypt(user.password) : ''
   console.log(oldUser);
   
   const keyValArr = [
     {key: 'role_pk', val: user.role_pk} ,
     {key: 'shop_pks', val: user.shop_pks} ,
     {key: 'email', val: user.email} ,
-    {key: 'password', val: hashedPassword} ,
     {key: 'nickname', val: user.nickname} ,
+    {key: '#name', val: user.name, isReservedKeyword: true} ,
     {key: 'image', val: user.image} ,
     {key: 'birthday', val: user.birthday} ,
     {key: 'userPoint', val: user.userPoint} ,
@@ -167,7 +177,7 @@ const generateDashboard = async (user: User) => {
   const defaultMenus = [
     {label: 'ホーム', href: '/'},
   ]
-  let dashboard: AppState = {status: 200, json: {menus: defaultMenus}}
+  let dashboard: UserDashboard = {status: 200, json: {menus: defaultMenus}}
   try {
     
     const roles = (await getAll('pk', 'roles')).json
@@ -177,8 +187,14 @@ const generateDashboard = async (user: User) => {
      * @description {roles, users}
      */
     if (isAdmin) {
-      const users = (await getAllUser('USER')).json 
-      const fUsers = users.map((u:User) => ({...u, role_name: roles.find((r: Role) => r.pk === u.role_pk).role_name}))
+      const users = (await getAllUser('USER')).json
+      const fUsers = users.map((u:User) => {
+        const currRole = roles.find((r: Role) => r.pk === u.role_pk)
+        const role_name = currRole ? currRole.role_name : u.role_pk
+        return (
+          {...u, role_name}
+        )
+      })
       dashboard.json = {
         menus: [
           ...defaultMenus,

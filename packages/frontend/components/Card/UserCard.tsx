@@ -7,7 +7,6 @@ import {
     Flex,
     Text,
     Stack,
-    Button,
     useColorModeValue,
   } from '@chakra-ui/react';
 import { FC } from 'react';

@@ -2,6 +2,7 @@ export { PermissionType } from './shared/enums'
 export { 
     Menu,
     AppState,
+    UserDashboard,
     User,
     Role,
     ReservationTicket,

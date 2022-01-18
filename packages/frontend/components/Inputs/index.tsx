@@ -1,6 +1,5 @@
-import { Box, Checkbox, CheckboxGroup, Input, Select, SelectField } from '@chakra-ui/react'
-import { useFormContext } from 'contexts/FormContext'
-import React, { ChangeEventHandler, FC, ReactText } from 'react'
+import { Box, Checkbox, CheckboxGroup, Input, Select } from '@chakra-ui/react'
+import React, { FC, ReactText } from 'react'
 
 export enum InputTypes {
     number='number',
@@ -15,7 +14,6 @@ interface Props {
     field: any;
     id: string;
     type: InputTypes;
-    dataListsKey?: string
     inputChoices?: {name: any, val: any}[]
     placeholder?: string;
     setFieldValue: (field: string, value: any, shouldValidate?: boolean) => void;
@@ -29,8 +27,6 @@ const NormalInputs: FC<Props> = ({ field, id, type, placeholder, inputChoices, s
         const value = evt.target.value
         setFieldValue(field.name, value)
     }
-    // const {initDataLists} = useFormContext()
-    // const lists = dataListsKey ? initDataLists.find(dl => dl.key === dataListsKey)?.val : []
     return (
         <>
             {(

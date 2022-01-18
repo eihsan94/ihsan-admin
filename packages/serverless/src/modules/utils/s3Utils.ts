@@ -22,7 +22,7 @@ const putBase64ToS3 = async(imageBinary: string, key: string): Promise<string> =
       ContentType: 'image/jpeg'
     };
     return new Promise((resolve, reject) => {
-      s3Bucket.putObject(data, (err, res) => {
+      s3Bucket.putObject(data, (err) => {
         if (err) {
           console.log(err);
           reject(err)
@@ -41,7 +41,7 @@ const deleteS3Object = async(objectUrl: string): Promise<string> => {
       Key: key,
     };
     return new Promise((resolve, reject) => {
-      s3Bucket.deleteObject(data, (err, res) => {
+      s3Bucket.deleteObject(data, (err) => {
         if (err) {
           console.log(err);
           reject(err)

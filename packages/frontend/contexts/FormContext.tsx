@@ -1,47 +1,95 @@
+import { InputTypes } from "@components/Inputs";
+import { AxiosRequestConfig } from "axios";
 import  { useState, createContext, FC, useContext } from "react";
+import * as Yup from 'yup';
 
-interface FormDataList{
-  key: string, 
-  val: {name: string, val: any}[],
+
+export interface InputChoice {
+  name: any, 
+  val: any,
 }
+export interface InputField {
+  name: string, 
+  isRequired?: boolean,
+  label: string, 
+  placeholder?: string, 
+  type: InputTypes;
+  icon?: JSX.Element, 
+  isInvalid: (errors: any, 
+  touched: any) => boolean, 
+  errors: (errors: any) => any
+  inputChoices?: InputChoice[]
+}
+
+export interface NormalFormAPiHandler {
+  fn:  (...args: any) => any;
+  url: (d?: any) => string;
+  reqConfig?: AxiosRequestConfig;
+}
+
+
 // Create Context Object
 const setFormInitValues = (arg: any) => {}
-const toggleApiReq = () => {}
+// CALLBACK AFTER FORM IS SUBMITTED
 const submitFormCallBack = () => {}
-const setInitialDataLists =  (fdl: FormDataList[]) => {}
-const initDataLists: FormDataList[] = []
 
-export const FormContext = createContext({initialValues: {}, setFormInitValues, submitFormCallBack, toggleApiReq, formSubmitted: false, initDataLists, setInitialDataLists});
+const setInputFields = (arg: any) => {}
+const inputFieldsInit: InputField[] = []
+
+const setApiHandler = (arg: any) => {}
+const apiHandlerInit: NormalFormAPiHandler = {
+  fn : () => {},
+  url : () => '/',
+}
+
+const formSchemaInit: Yup.SchemaOf<any> = {} as any
+const setFormSchema = (arg: any) => {}
+
+const setFormTitle = (arg: any) => {}
+
+export const FormContext = createContext({
+  initialValues: {}, 
+  setFormInitValues, 
+  submitFormCallBack, 
+  apiHandler: apiHandlerInit, setApiHandler,
+  inputFields: inputFieldsInit, setInputFields,
+  formSchema: formSchemaInit, setFormSchema,
+  formTitle:'', setFormTitle,
+});
 
 // Create a provider for components to consume and subscribe to changes
 export const FormContextProvider: FC = ({children}) => {
   const [initialValues, setInitialValues] = useState({});
-  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formTitle, setTitle] = useState('');
+  const [apiHandler, setApiHandler] = useState({
+    fn : () => {},
+    url : () => '/',
+  });
+  const [formSchema, setFormSchema] = useState<Yup.SchemaOf<any>>({} as any)
+  const [inputFields, setInputFields] = useState([])
+
   
-  const [initDataLists, setInitDataLists] = useState<FormDataList[]>([]);
-  const setInitialDataLists = (FDL: FormDataList[])  => {
-    const IDL = [...initDataLists]
-    FDL.map(fdl => {
-      const i = initDataLists.findIndex(dl => dl.key === fdl.key)
-      i > -1
-      ? IDL[i].val = fdl.val
-      : IDL.push(fdl)
-    })
-    setInitDataLists(IDL)
-  }
+  
   const setFormInitValues = (arg: any) => {
-    setFormSubmitted(false)
     setInitialValues(arg)
   }
-  const toggleApiReq = () => {
-    setFormSubmitted(true)
-    setFormSubmitted(false)
-  }
-  const submitFormCallBack = () =>{
-    setFormSubmitted(true)
+  const setFormTitle = (arg:any) => {
+    setTitle(arg)
   }
   return (
-    <FormContext.Provider value={{initialValues, setFormInitValues, submitFormCallBack, formSubmitted, toggleApiReq, initDataLists, setInitialDataLists}}>
+    <FormContext.Provider value={{
+        initialValues, 
+        setFormInitValues, 
+        submitFormCallBack, 
+        formSchema, 
+        setFormSchema,
+        apiHandler,
+        setApiHandler,
+        inputFields, 
+        setInputFields, 
+        formTitle, 
+        setFormTitle
+      }}>
       {children}
     </FormContext.Provider>
   );

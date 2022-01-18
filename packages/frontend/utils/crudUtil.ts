@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig } from "axios";
+import { getSession } from "next-auth/react";
 axios.defaults.baseURL = `${process.env.NEXT_PUBLIC_IHSAN_PAY_SERVER_BASE_URL}`;
 axios.defaults.headers.post['Content-Type'] ='application/json';
 
@@ -85,13 +86,13 @@ export {
     signUp,
 }
 
-const appendAuth = async(reqConfig?: AxiosRequestConfig) => {
-    const cookies = await localStorage.getItem('cookies');
-    return cookies
+const appendAuth = async(reqConfig?: AxiosRequestConfig): Promise<AxiosRequestConfig> => {
+    const session = await getSession()
+    return session
     ? {
         ...reqConfig,
         headers: {
-            Authorization:  `Bearer ${cookies}`,
+            Current_User_Email: session!.user?.email as string,
         }
     }
     : {

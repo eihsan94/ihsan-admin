@@ -7,16 +7,15 @@ import { GetServerSideProps } from "next";
 
 import { FC } from "react";
 import { noAppendCookiesGetLists } from "@utils/crudUtil";
-import {AppState, Role, User} from '@lib'
-import { useFormContext } from "contexts/FormContext";
+import {UserDashboard,Role, User} from '@lib'
 import { useAppContext } from "contexts/AppContext";
-import { Button, Flex, Spinner } from "@chakra-ui/react";
+import { Flex, Spinner } from "@chakra-ui/react";
 import RoleTable from "@components/tables/roleTable";
 import UserTable from "@components/tables/userTable";
 
 interface Props {
    session: string;
-   userDashboard: AppState;
+   userDashboard: UserDashboard;
 }
 
 const Home:FC<Props> = () => {
@@ -28,14 +27,13 @@ const Home:FC<Props> = () => {
   const [isAdmin, setIsAdmin] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<User[] | null>(null)
-  const {setInitialDataLists} = useFormContext()
   const {setCurrentAppState} = useAppContext()
   
   useEffect(() => {
     (async () => {
       if (session) {
         setIsLoading(true)
-        const userDashboard = await noAppendCookiesGetLists<AppState>('users/latest', {
+        const userDashboard = await noAppendCookiesGetLists<UserDashboard>('users/latest', {
           headers: {
             Current_User_Email: session!.user?.email as string,
           }
@@ -44,18 +42,13 @@ const Home:FC<Props> = () => {
         setError(userDashboard.error)
         const {admin} = userDashboard.json || {admin: ''}
         setIsAdmin(!!admin)
-        console.log(userDashboard);
-        setCurrentAppState(userDashboard)
+        setCurrentAppState({
+          menus: userDashboard.json ? userDashboard.json.menus : [],
+          roles: admin ? admin.roles : []
+        })
         if (admin) {
           setRoles(admin.roles)
           setUsers(admin.users)
-          setInitialDataLists([
-            {key: 'ROLES', val: [...admin.roles.map(r => ({name: r.role_name, val: r.pk}))]},
-            {key: 'ROLE_PERMISSIONS', val: [
-              {name: 'ALL', val: 'ALL'},
-              {name: 'USER', val: 'USER'},
-            ]},
-          ])
         }
         setIsLoading(false)
       }

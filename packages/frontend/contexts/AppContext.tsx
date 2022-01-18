@@ -1,16 +1,11 @@
-import { AppState } from "@libTypes/types";
+
+import { AppState } from "@lib";
 import  { useState, createContext, FC, useContext} from "react";
 
 // Create Context Object
 const initAppState: AppState = {
-  status: 200,
-  json: {
-      menus: [],
-      admin: {
-          roles: [],
-          users: [],
-      }
-  }
+  roles: [],
+  menus: [],
 }
 export const AppContext = createContext({
   appState: initAppState, 
