@@ -1,0 +1,24 @@
+{
+  "pk": {
+    "S": "eafd24e0-c0ee-4d98-b639-b46cce5dc72c-roles"
+  },
+  "updated": {
+    "S": "2021-08-17T12:34:32.370Z"
+  },
+  "updatedAt": {
+    "N": "1628513014053"
+  },
+  "createdAt": {
+    "N": "1628513014053"
+  },
+  "role_name": {
+    "S": "ADMIN"
+  },
+  "role_permissions": {
+    "L": [
+      {
+        "S": "ALL"
+      }
+    ]
+  }
+}

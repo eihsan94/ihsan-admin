@@ -1,30 +1,32 @@
 [
     {
-      "type": "oauth",
-      "token_type": "Bearer",
-      "userId": "4a58180858736036c0dc452d203ce68e",
-      "access_token": "ya29.A0ARrdaM8cDIv7my6bKv_6J1oh8sAEpvBpAsYykTZUzSYD_J0nUlDF_4E_HDvG1RZKO2zTCET-fGOEyp-iteHE_z5VgYKCPN3TdF7VB7Yo7hPrVfPOdcIKZc4rvkQzZ8BVXO4ER1JGb2Dd_Gh9Zh3Irfhm4qpA",
-      "expires_at": 1642013174,
-      "GSI1PK": "ACCOUNT#google",
-      "provider": "google",
-      "providerAccountId": "103514277326947370868",
-      "scope": "openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
-      "GSI1SK": "ACCOUNT#103514277326947370868",
-      "sk": "ACCOUNT#google#103514277326947370868",
-      "id": "b0a1e65b552fff301e7edda906d0e1b7",
-      "pk": "USER#4a58180858736036c0dc452d203ce68e"
+        "accessToken": "ya29.a0ARrdaM8dUN9GMbgNXipahbTezxy528upzp3dVLbfX1mR1Za5pKnc1QsNh6zRoId3giHEr6-l8i2FkzS0JzN3HHeF142MgjPTx_XK_53-vNRUZr8alKIwRQz9J4kkp8I4nyvZJe_-D48r8Gx-KscUHWG6bRhr",
+        "type": "ACCOUNT",
+        "userId": "d32bbc67c998b4d3d1946670dd4bc3fe",
+        "providerType": "oauth",
+        "createdAt": "2021-08-09T11:46:50.523Z",
+        "GSI1PK": "ACCOUNT#103514277326947370868",
+        "providerId": "google",
+        "GSI1SK": "ACCOUNT#google",
+        "providerAccountId": "103514277326947370868",
+        "sk": "ACCOUNT#google#103514277326947370868",
+        "accessTokenExpires": null,
+        "pk": "USER#d32bbc67c998b4d3d1946670dd4bc3fe",
+        "updatedAt": "2021-08-09T11:46:50.523Z"
     },
     {
-      "image": "https://lh3.googleusercontent.com/a-/AOh14GjCt7gj7TAndd4Dia__Z1bLxc6SaW4NIUY1OI-Hgg=s96-c",
-      "emailVerified": null,
-      "GSI1PK": "USER#eihsan94@gmail.com",
-      "GSI1SK": "USER#eihsan94@gmail.com",
-      "name": "engku ihsan",
-      "sk": "USER#4a58180858736036c0dc452d203ce68e",
-      "id": "4a58180858736036c0dc452d203ce68e",
-      "pk": "USER#4a58180858736036c0dc452d203ce68e",
-      "role_pk": "eafd24e0-c0ee-4d98-b639-b46cce5dc72c-roles",
-      "type": "USER",
-      "email": "eihsan94@gmail.com"
+        "image": "https://lh3.googleusercontent.com/a-/AOh14GjCt7gj7TAndd4Dia__Z1bLxc6SaW4NIUY1OI-Hgg=s96-c",
+        "emailVerified": null,
+        "createdAt": "2021-08-09T11:46:50.491Z",
+        "role_pk": "eafd24e0-c0ee-4d98-b639-b46cce5dc72c-roles",
+        "GSI1PK": "USER#eihsan94@gmail.com",
+        "GSI1SK": "USER#eihsan94@gmail.com",
+        "sk": "USER#d32bbc67c998b4d3d1946670dd4bc3fe",
+        "name": "engku ihsan",
+        "pk": "USER#d32bbc67c998b4d3d1946670dd4bc3fe",
+        "id": "d32bbc67c998b4d3d1946670dd4bc3fe",
+        "type": "USER",
+        "email": "eihsan94@gmail.com",
+        "updatedAt": "2021-08-09T11:46:50.491Z"
     }
-  ]
+]
