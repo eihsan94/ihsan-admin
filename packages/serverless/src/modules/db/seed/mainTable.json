@@ -7,5 +7,14 @@
         "role_name": "ADMIN",
         "createdAt": 1628513014053,
         "updatedAt": 1628513014053
+    },
+    {
+        "pk": "eafd24e0-c0ee-4d98-b639-b46cce5dc72d-roles",
+        "role_permissions": [
+            "CAN_EDIT_PROFILE"
+        ],
+        "role_name": "USER",
+        "createdAt": 1628513014053,
+        "updatedAt": 1628513014053
     }
 ]
