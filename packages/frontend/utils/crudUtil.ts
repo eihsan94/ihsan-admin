@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { getSession } from "next-auth/react";
-axios.defaults.baseURL = `${process.env.NEXT_PUBLIC_IHSAN_PAY_SERVER_BASE_URL}`;
+axios.defaults.baseURL = `${process.env.NEXT_PUBLIC_SERVER_BASE_URL}`;
 axios.defaults.headers.post['Content-Type'] ='application/json';
 
 const noAppendCookiesGetLists = async<T>(url: string, reqConfig?:AxiosRequestConfig): Promise<T> => {

@@ -6,7 +6,7 @@ import axios from "axios";
 import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb"
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import { DynamoDB, DynamoDBClientConfig } from '@aws-sdk/client-dynamodb';
-axios.defaults.baseURL = `${process.env.NEXT_PUBLIC_IHSAN_PAY_SERVER_BASE_URL}`;
+axios.defaults.baseURL = `${process.env.NEXT_PUBLIC_SERVER_BASE_URL}`;
 axios.defaults.headers.post['Content-Type'] ='application/json';
 
 
