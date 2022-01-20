@@ -23726,10 +23726,10 @@ var require_response2 = __commonJS({
 var require_get_framework = __commonJS({
   "../../node_modules/serverless-http/lib/framework/get-framework.js"(exports2, module2) {
     "use strict";
-    var Response = require_response2();
+    var Response2 = require_response2();
     function common(cb) {
       return (request) => {
-        const response = new Response(request);
+        const response = new Response2(request);
         cb(request, response);
         return response;
       };
@@ -23771,7 +23771,7 @@ var require_get_framework = __commonJS({
         return async (request) => {
           const { method, url, headers, body } = request;
           const res = await app2.inject({ method, url, headers, payload: body });
-          return Response.from(res);
+          return Response2.from(res);
         };
       }
       if (typeof app2.main === "function") {
@@ -24023,11 +24023,11 @@ var require_format_response = __commonJS({
   "../../node_modules/serverless-http/lib/provider/aws/format-response.js"(exports2, module2) {
     "use strict";
     var isBinary = require_is_binary();
-    var Response = require_response2();
+    var Response2 = require_response2();
     var sanitizeHeaders = require_sanitize_headers();
     module2.exports = (event, response, options) => {
       const { statusCode } = response;
-      const { headers, multiValueHeaders } = sanitizeHeaders(Response.headers(response));
+      const { headers, multiValueHeaders } = sanitizeHeaders(Response2.headers(response));
       if (headers["transfer-encoding"] === "chunked" || response.chunkedEncoding) {
         throw new Error("chunked encoding not supported");
       }
@@ -24037,7 +24037,7 @@ var require_format_response = __commonJS({
       }
       const isBase64Encoded = isBinary(headers, options);
       const encoding = isBase64Encoded ? "base64" : "utf8";
-      const body = Response.body(response).toString(encoding);
+      const body = Response2.body(response).toString(encoding);
       let formattedResponse = { statusCode, headers, isBase64Encoded, body };
       if (event.version === "2.0" && cookies.length) {
         formattedResponse["cookies"] = cookies;
@@ -26864,7 +26864,7 @@ if (process.env.STAGE === "dev" || process.env.STAGE === "local") {
 app.use(import_express3.default.json());
 app.use("/api/users", userRoutes_default);
 app.use("/api/roles", roleRoutes_default);
-app.use((req, res, next) => {
+app.use((res) => {
   return res.status(404).json({
     error: "Not Found"
   });

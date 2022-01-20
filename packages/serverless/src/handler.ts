@@ -1,6 +1,6 @@
 import { APIGatewayProxyHandler } from "aws-lambda";
 import morgan from 'morgan'
-import express from 'express'
+import express, { Response } from 'express'
 import ServerlessHttp from 'serverless-http'
 import cors from 'cors'
 import userRoutes from "./modules/routes/userRoutes";
@@ -20,7 +20,7 @@ app.use('/api/roles', roleRoutes)
 
 
 
-app.use((req, res, next) => {
+app.use((res: Response) => {
   return res.status(404).json({
     error: "Not Found",
   });
