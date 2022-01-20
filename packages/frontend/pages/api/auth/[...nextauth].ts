@@ -44,6 +44,7 @@ const options: NextAuthOptions  = {
     session: {
       strategy: "database",
     },
+    secret: "ycRpYmPetWmeY243Nqpn1999sR12vAwYJ/ke/ThEkOU="
 }
 
 const NextAuthApi = (req: NextApiRequest, res: NextApiResponse) => NextAuth(req, res, options)
