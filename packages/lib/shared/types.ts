@@ -1,4 +1,5 @@
 import { PermissionType } from "./enums";
+type TPermissionType = typeof PermissionType
 
 export interface Menu {
     label: string;
