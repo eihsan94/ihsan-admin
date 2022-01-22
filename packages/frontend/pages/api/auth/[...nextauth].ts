@@ -1,13 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import GoogleProvider from "next-auth/providers/google";
 import { DynamoDBAdapter } from "@next-auth/dynamodb-adapter"
-import AWS from "aws-sdk";
-import axios from "axios";
 import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb"
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import { DynamoDB, DynamoDBClientConfig } from '@aws-sdk/client-dynamodb';
-axios.defaults.baseURL = `${process.env.NEXT_PUBLIC_SERVER_BASE_URL}`;
-axios.defaults.headers.post['Content-Type'] ='application/json';
 
 
 
@@ -28,23 +24,23 @@ const client = DynamoDBDocument.from(new DynamoDB(config), {
   },
 })
 
-const options: NextAuthOptions  = {
-    providers: [
-      GoogleProvider({
-        clientId:`${process.env.GOOGLE_CLIENT_ID}`,
-        clientSecret: `${process.env.GOOGLE_CLIENT_SECRET}`,
-      }),
-    ],
-    // // CONFIG NEXT AUTH WITH DYNAMODB
-    adapter: DynamoDBAdapter(
-        client,
-        {tableName: `${process.env.NEXT_AUTH_DATABASE_NAME}-user`},
-    ),
-    // THIS NEED TO BE ENABLED FOR MAKING THE SESSION TO WORK WITH JWT
-    session: {
-      strategy: "database",
-    },
-    secret: "ycRpYmPetWmeY243Nqpn1999sR12vAwYJ/ke/ThEkOU="
+const options: NextAuthOptions = {
+  providers: [
+    GoogleProvider({
+      clientId: `${process.env.GOOGLE_CLIENT_ID}`,
+      clientSecret: `${process.env.GOOGLE_CLIENT_SECRET}`,
+    }),
+  ],
+  // // CONFIG NEXT AUTH WITH DYNAMODB
+  adapter: DynamoDBAdapter(
+    client,
+    { tableName: `${process.env.NEXT_AUTH_DATABASE_NAME}-user` },
+  ),
+  // THIS NEED TO BE ENABLED FOR MAKING THE SESSION TO WORK WITH JWT
+  session: {
+    strategy: "database",
+  },
+  secret: "ycRpYmPetWmeY243Nqpn1999sR12vAwYJ/ke/ThEkOU="
 }
 
 const NextAuthApi = (req: NextApiRequest, res: NextApiResponse) => NextAuth(req, res, options)
