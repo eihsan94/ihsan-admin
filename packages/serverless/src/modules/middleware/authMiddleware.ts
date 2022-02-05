@@ -1,9 +1,8 @@
-
 import { Request } from 'express'
 import asyncHandler from 'express-async-handler'
 import { deleteSingleUser, getAll, getAllUser, putSingleUser } from '../utils/crudUtil'
 import { PermissionType, Role, User } from '@lib'
-
+import { httpError } from '../utils/errorHandler'
 export interface IGetUserAuthInfoRequest extends Request {
   user: User // or any other type
 }
@@ -15,6 +14,9 @@ const protect = asyncHandler(async (req: IGetUserAuthInfoRequest, res, next) => 
 
   try {
     let currentUser = await searchCurrentUser(current_user_email as string)
+    if (!currentUser) {
+      return httpError(res, 401, `Your login session is expired. Please login again 😭`)
+    }
     const currentUserId = currentUser.id
     const isLogin = (await getAllUser('SESSION')).json.filter((s: any) => s.userId === currentUserId).length > 0
     if (isLogin) {
@@ -22,12 +24,11 @@ const protect = asyncHandler(async (req: IGetUserAuthInfoRequest, res, next) => 
       req.user = currentUser
       next()
     } else {
-      console.log(`the email provided: ${current_user_email} does not have user user session. It is not login`);
-      return res.status(401).json({ error: `Failed to authenticate for ${current_user_email}. Please Login again😭` })
+      console.error(`the email provided: ${current_user_email} does not have user user session. It is not login`);
+      return httpError(res, 401, `Failed to authenticate for ${current_user_email}. Please Login again😭`)
     }
-  } catch (error) {
-    console.error(error)
-    return res.status(500).json({ error: `This error is given while authenticating login session for ${current_user_email}: ${error}😭` })
+  } catch (err) {
+    return httpError(res, 401, `This error is given while authenticating login session for ${current_user_email}: ${err}😭`)
   }
 })
 
@@ -46,10 +47,10 @@ const onlyPermit = (permissionTypes: PermissionType[]) => {
 
         next(); // role is allowed, so continue on the next middleware
       } else {
-        return res.status(401).json({ error: `You are not authorized. Only user with ${permissionTypes} role is permitted` })
+        return httpError(res, 401, `You are not authorized. Only user with ${permissionTypes} role is permitted`)
       }
     } else {
-      return res.status(401).json({ error: `You are not authorized. Only user with ${permissionTypes} role is permitted` })
+      return httpError(res, 401, `You are not authorized. Only user with ${permissionTypes} role is permitted`)
     }
   })
 }
@@ -87,4 +88,3 @@ export {
   protect,
   onlyPermit,
 }
-// add onlyPermit in product routes and check wether it works or not

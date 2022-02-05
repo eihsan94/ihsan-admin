@@ -26405,7 +26405,8 @@ var getAll = async (attr, val, tablePrefix) => {
   try {
     res.json = (await dynamoDb.scan(params).promise()).Items;
   } catch (err) {
-    res = { json: { error: err }, status: 500 };
+    const error = new Error(err);
+    res = { json: { error }, status: 500 };
   }
   return res;
 };
@@ -26420,7 +26421,8 @@ var getSingle = async (id, tablePrefix) => {
   try {
     res.json = (await dynamoDb.get(params).promise()).Item;
   } catch (err) {
-    res = { json: { error: err }, status: 500 };
+    const error = new Error(err);
+    res = { json: { error }, status: 500 };
   }
   return res;
 };
@@ -26434,7 +26436,8 @@ var postSingle = async (Item, tablePrefix) => {
     await dynamoDb.put(params).promise();
     res.json = Item;
   } catch (err) {
-    res = { json: { error: err }, status: 500 };
+    const error = new Error(err);
+    res = { json: { error }, status: 500 };
   }
   return res;
 };
@@ -26474,7 +26477,8 @@ var putSingle = async (pk, keyValArr, tablePrefix) => {
     const { Attributes } = await dynamoDb.update(params).promise();
     res.json = Attributes;
   } catch (err) {
-    res = { json: { error: err }, status: 500 };
+    const error = new Error(err);
+    res = { json: { error }, status: 500 };
   }
   return res;
 };
@@ -26495,7 +26499,8 @@ var deleteSingle = async (pk, tablePrefix) => {
     await dynamoDb.delete(params).promise();
     res.json = { message: "\u6B63\u5E38\u306B\u524A\u9664\u3067\u304D\u307E\u3057\u305F\u{1F6AE}" };
   } catch (err) {
-    res = { json: { error: err }, status: 500 };
+    const error = new Error(err);
+    res = { json: { error }, status: 500 };
   }
   return res;
 };
@@ -26514,7 +26519,8 @@ var getAllUser = async (type) => {
   try {
     res.json = (await dynamoDb.scan(params).promise()).Items;
   } catch (err) {
-    res = { json: { error: err }, status: 500 };
+    const error = new Error(err);
+    res = { json: { error }, status: 500 };
   }
   return res;
 };
@@ -26557,7 +26563,8 @@ var putSingleUser = async (pk, sk, keyValArr) => {
     const { Attributes } = await dynamoDb.update(params).promise();
     res.json = Attributes;
   } catch (err) {
-    res = { json: { error: err }, status: 500 };
+    const error = new Error(err);
+    res = { json: { error }, status: 500 };
   }
   return res;
 };
@@ -26579,7 +26586,8 @@ var deleteSingleUser = async (id) => {
     await dynamoDb.delete(params).promise();
     res.json = { message: "\u6B63\u5E38\u306B\u524A\u9664\u3067\u304D\u307E\u3057\u305F\u{1F6AE}" };
   } catch (err) {
-    res = { json: { error: err }, status: 500 };
+    const error = new Error(err);
+    res = { json: { error }, status: 500 };
   }
   return res;
 };
@@ -26727,10 +26735,23 @@ var generateDashboard = async (user) => {
 
 // src/modules/middleware/authMiddleware.ts
 var import_express_async_handler2 = __toESM(require_express_async_handler());
+
+// src/modules/utils/errorHandler.ts
+var httpError = (res, code, message2) => {
+  const error = new Error(message2);
+  return res.status(code).send(error);
+};
+
+// src/modules/middleware/authMiddleware.ts
 var protect = (0, import_express_async_handler2.default)(async (req, res, next) => {
   const { current_user_email } = req.headers;
+  console.log("OAUTH", (await getAllUser("oauth")).json);
+  console.log("USER", (await getAllUser("USER")).json);
   try {
     let currentUser = await searchCurrentUser(current_user_email);
+    if (!currentUser) {
+      return httpError(res, 401, `Your login session is expired. Please login again \u{1F62D}`);
+    }
     const currentUserId = currentUser.id;
     const isLogin = (await getAllUser("SESSION")).json.filter((s) => s.userId === currentUserId).length > 0;
     if (isLogin) {
@@ -26738,12 +26759,11 @@ var protect = (0, import_express_async_handler2.default)(async (req, res, next) 
       req.user = currentUser;
       next();
     } else {
-      console.log(`the email provided: ${current_user_email} does not have user user session. It is not login`);
-      return res.status(401).json({ error: `Failed to authenticate for ${current_user_email}. Please Login again\u{1F62D}` });
+      console.error(`the email provided: ${current_user_email} does not have user user session. It is not login`);
+      return httpError(res, 401, `Failed to authenticate for ${current_user_email}. Please Login again\u{1F62D}`);
     }
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: `This error is given while authenticating login session for ${current_user_email}: ${error}\u{1F62D}` });
+  } catch (err) {
+    return httpError(res, 401, `This error is given while authenticating login session for ${current_user_email}: ${err}\u{1F62D}`);
   }
 });
 var onlyPermit = (permissionTypes) => {
@@ -26757,10 +26777,10 @@ var onlyPermit = (permissionTypes) => {
         console.log(`PERMISSION GRANTED, welcome ${currentRole.role_name} ${user.email}`);
         next();
       } else {
-        return res.status(401).json({ error: `You are not authorized. Only user with ${permissionTypes} role is permitted` });
+        return httpError(res, 401, `You are not authorized. Only user with ${permissionTypes} role is permitted`);
       }
     } else {
-      return res.status(401).json({ error: `You are not authorized. Only user with ${permissionTypes} role is permitted` });
+      return httpError(res, 401, `You are not authorized. Only user with ${permissionTypes} role is permitted`);
     }
   });
 };

@@ -8,7 +8,7 @@ interface Props { }
 function GoogleLoginBtn(props: Props) {
     return (
         <Button
-            onClick={() => signIn('google')}
+            onClick={() => signIn('google', { callbackUrl: '/' })}
             rounded="full"
             size="lg"
             fontFamily={'heading'}
