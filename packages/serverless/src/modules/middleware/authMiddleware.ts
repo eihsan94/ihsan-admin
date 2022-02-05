@@ -62,13 +62,17 @@ const searchCurrentUser = async (current_user_email: string): Promise<User> => {
   const currUsers = (await getAllUser('USER')).json.filter((u: User) => u.email === current_user_email)
   if (currUsers.length > 1) { // iF THE ADMIN ALREADY MAKE THE USER
     const nonGoogleUsers = currUsers.find(u => u.notLinked === true)
-    const { role_pk } = nonGoogleUsers
-    currentUser = currUsers.find(u => !u.notLinked)
-    currentUser.role_pk = role_pk
-    console.log("iF THE ADMIN ALREADY MAKE THE USER", currentUser);
-    await putSingleUser(currentUser.pk, currentUser.sk, [{ key: 'role_pk', val: currentUser.role_pk }])
-    await deleteSingleUser(nonGoogleUsers.id)
 
+    if (nonGoogleUsers) {
+      const { role_pk } = nonGoogleUsers
+      currentUser = currUsers.find(u => !u.notLinked)
+      currentUser.role_pk = role_pk
+      console.log("THE ADMIN ALREADY MAKE THE USER", currentUser);
+      await putSingleUser(currentUser.pk, currentUser.sk, [{ key: 'role_pk', val: currentUser.role_pk }])
+      await deleteSingleUser(nonGoogleUsers.id)
+      return
+    }
+    currentUser = (await getAllUser('USER')).json.filter((u: User) => u.email === current_user_email)[0]
   } else {
     currentUser = (await getAllUser('USER')).json.filter((u: User) => u.email === current_user_email)[0]
   }

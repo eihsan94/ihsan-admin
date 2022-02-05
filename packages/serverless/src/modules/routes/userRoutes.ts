@@ -17,13 +17,13 @@ import { protect, onlyPermit } from '../middleware/authMiddleware'
 /**
  * @permissions ONLY ALLOW admin like permission
  */
- const permissions: PermissionType[] = [PermissionType.CAN_EDIT_USER, PermissionType.ALL]
- 
+const permissions: PermissionType[] = [PermissionType.CAN_EDIT_USER, PermissionType.ALL]
+
 userRoutes.route('/')
   .post(registerUser)
   .get(protect, onlyPermit(permissions), getUsers)
 
-userRoutes.route('/all').get(protect, onlyPermit(permissions),getAllUserInfo)
+userRoutes.route('/all').get(protect, onlyPermit(permissions), getAllUserInfo)
 
 userRoutes.post('/login', authUser)
 
@@ -39,8 +39,8 @@ userRoutes.route('/latest').get(protect, getUserLatest)
  */
 userRoutes
   .route('/:id')
-    .get(protect, onlyPermit([...permissions,  PermissionType.CAN_EDIT_PROFILE,]),getUserById)
-    .put(protect, onlyPermit([...permissions,  PermissionType.CAN_EDIT_PROFILE,]),updateUser)
-    .delete(protect, onlyPermit(permissions),deleteUser)
+  .get(protect, onlyPermit([...permissions, PermissionType.CAN_EDIT_PROFILE,]), getUserById)
+  .put(protect, onlyPermit([...permissions, PermissionType.CAN_EDIT_PROFILE,]), updateUser)
+  .delete(protect, onlyPermit(permissions), deleteUser)
 
 export default userRoutes

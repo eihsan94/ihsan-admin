@@ -26615,6 +26615,7 @@ var getAllUserInfo = (0, import_express_async_handler.default)(async ({ res }) =
   return res.status(result.status).json(result.json);
 });
 var getUserLatest = (0, import_express_async_handler.default)(async (req, res) => {
+  console.log("test");
   try {
     const dashboard = await generateDashboard(req.user);
     return res.status(dashboard.status).json(dashboard);
@@ -26789,12 +26790,16 @@ var searchCurrentUser = async (current_user_email) => {
   const currUsers = (await getAllUser("USER")).json.filter((u) => u.email === current_user_email);
   if (currUsers.length > 1) {
     const nonGoogleUsers = currUsers.find((u) => u.notLinked === true);
-    const { role_pk } = nonGoogleUsers;
-    currentUser = currUsers.find((u) => !u.notLinked);
-    currentUser.role_pk = role_pk;
-    console.log("iF THE ADMIN ALREADY MAKE THE USER", currentUser);
-    await putSingleUser(currentUser.pk, currentUser.sk, [{ key: "role_pk", val: currentUser.role_pk }]);
-    await deleteSingleUser(nonGoogleUsers.id);
+    if (nonGoogleUsers) {
+      const { role_pk } = nonGoogleUsers;
+      currentUser = currUsers.find((u) => !u.notLinked);
+      currentUser.role_pk = role_pk;
+      console.log("THE ADMIN ALREADY MAKE THE USER", currentUser);
+      await putSingleUser(currentUser.pk, currentUser.sk, [{ key: "role_pk", val: currentUser.role_pk }]);
+      await deleteSingleUser(nonGoogleUsers.id);
+      return;
+    }
+    currentUser = (await getAllUser("USER")).json.filter((u) => u.email === current_user_email)[0];
   } else {
     currentUser = (await getAllUser("USER")).json.filter((u) => u.email === current_user_email)[0];
   }

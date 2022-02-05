@@ -1,32 +1,31 @@
 [
     {
-        "accessToken": "ya29.a0ARrdaM8dUN9GMbgNXipahbTezxy528upzp3dVLbfX1mR1Za5pKnc1QsNh6zRoId3giHEr6-l8i2FkzS0JzN3HHeF142MgjPTx_XK_53-vNRUZr8alKIwRQz9J4kkp8I4nyvZJe_-D48r8Gx-KscUHWG6bRhr",
-        "type": "ACCOUNT",
-        "userId": "d32bbc67c998b4d3d1946670dd4bc3fe",
-        "providerType": "oauth",
-        "createdAt": "2021-08-09T11:46:50.523Z",
-        "GSI1PK": "ACCOUNT#103514277326947370868",
-        "providerId": "google",
-        "GSI1SK": "ACCOUNT#google",
-        "providerAccountId": "103514277326947370868",
+        "pk": "USER#d0e2cc1bb4628c06cf7f8950e606a270",
         "sk": "ACCOUNT#google#103514277326947370868",
-        "accessTokenExpires": null,
-        "pk": "USER#d32bbc67c998b4d3d1946670dd4bc3fe",
-        "updatedAt": "2021-08-09T11:46:50.523Z"
+        "providerAccountId": "103514277326947370868",
+        "scope": "https://www.googleapis.com/auth/userinfo.profile openid https://www.googleapis.com/auth/userinfo.email",
+        "GSI1SK": "ACCOUNT#103514277326947370868",
+        "access_token": "ya29.A0ARrdaM8WPGJx4oRf9YUbll6dGKW-6U0izm87NNC6EhGAUVfOznk0Umb92hUF6A0WCwSEcgJlb3NM51sq4l3t7Nmrf1VbcvqJQZ-gUfj3Jx9zMD2D2bHzBr_9lF83Fbqg8ES8AO3GXRuCoRddpfMCNWlazHLn",
+        "expires_at": "1642682328",
+        "token_type": "Bearer",
+        "GSI1PK": "ACCOUNT#google",
+        "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImNhMDA2MjBjNWFhN2JlOGNkMDNhNmYzYzY4NDA2ZTQ1ZTkzYjNjYWIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIyNzk3MTA4OTU4MTgtbXFoZnRicjhobGVkaDY5bWpobGduNGdmNGN2aW1lcHAuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIyNzk3MTA4OTU4MTgtbXFoZnRicjhobGVkaDY5bWpobGduNGdmNGN2aW1lcHAuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDM1MTQyNzczMjY5NDczNzA4NjgiLCJlbWFpbCI6ImVpaHNhbjk0QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiSXM5YXNvemhtd1hZckxlVWt6LWlpUSIsIm5hbWUiOiJlbmdrdSBpaHNhbiIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS0vQU9oMTRHakN0N2dqN1RBbmRkNERpYV9fWjFiTHhjNlNhVzROSVVZMU9JLUhnZz1zOTYtYyIsImdpdmVuX25hbWUiOiJlbmdrdSIsImZhbWlseV9uYW1lIjoiaWhzYW4iLCJsb2NhbGUiOiJlbiIsImlhdCI6MTY0MjY3ODcyOSwiZXhwIjoxNjQyNjgyMzI5fQ.uioLD2HLSgZA5bczHn6PdnoJXxrih5BDGa72Z0ZU7ASmJ5Z0_0dXcza8dZXyiUyr9jCHHBLobVvXAlT_kFRE-hTetgKUHLqRpN7fLv5RVlWlkRmPeAu4DyxesytAZJIidO0xu2HJK1GUHB5XJdvZmGp8r-pWup7U2fbdCaM5OX6mD_jAdqJDglPevGRtNgAfJqSG3LLjLZ8mnWk_AZ_1a3cpDovdom6CpVCci0EQC3iXIcp9eah3nJqp-NP7p9MzHeo4uU4ia581GA_LH1wb-cV4_XYLcJr2sMxkOe8Jcep_C-J7my5E4uikWUyjhPS_KVLxtEO7x8qhVvJrgTulZQ",
+        "userId": "d0e2cc1bb4628c06cf7f8950e606a270",
+        "provider": "google",
+        "id": "74cb8e9994df25f206b5360fe168e64d",
+        "type": "oauth"
     },
     {
-        "image": "https://lh3.googleusercontent.com/a-/AOh14GjCt7gj7TAndd4Dia__Z1bLxc6SaW4NIUY1OI-Hgg=s96-c",
-        "emailVerified": null,
-        "createdAt": "2021-08-09T11:46:50.491Z",
-        "role_pk": "eafd24e0-c0ee-4d98-b639-b46cce5dc72c-roles",
+        "pk": "USER#d0e2cc1bb4628c06cf7f8950e606a270",
+        "sk": "USER#d0e2cc1bb4628c06cf7f8950e606a270",
+        "emailVerified": true,
         "GSI1PK": "USER#eihsan94@gmail.com",
+        "role_pk": "eafd24e0-c0ee-4d98-b639-b46cce5dc72c-roles",
+        "image": "https://lh3.googleusercontent.com/a-/AOh14GjCt7gj7TAndd4Dia__Z1bLxc6SaW4NIUY1OI-Hgg=s96-c",
         "GSI1SK": "USER#eihsan94@gmail.com",
-        "sk": "USER#d32bbc67c998b4d3d1946670dd4bc3fe",
-        "name": "engku ihsan",
-        "pk": "USER#d32bbc67c998b4d3d1946670dd4bc3fe",
-        "id": "d32bbc67c998b4d3d1946670dd4bc3fe",
-        "type": "USER",
         "email": "eihsan94@gmail.com",
-        "updatedAt": "2021-08-09T11:46:50.491Z"
+        "id": "d0e2cc1bb4628c06cf7f8950e606a270",
+        "name": "engku ihsan",
+        "type": "USER"
     }
 ]

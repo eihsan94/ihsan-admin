@@ -315,49 +315,6 @@ export default function Dashboard() {
               h="inherit"
               borderRadius="inherit"
             ></Box>
-            <Portal>
-              <Flex
-                flexDirection="column"
-                color="white"
-                p="1.5rem 1.2rem 0.3rem 1.2rem"
-                lineHeight="1.6"
-              >
-                <Text fontSize="xl" fontWeight="bold" pb=".3rem">
-                  Work with the rockets
-                </Text>
-                <Text fontSize="sm" fontWeight="normal" w={{ lg: "92%" }}>
-                  Wealth creation is a revolutionary recent positive-sum game.
-                  It is all about who takes the opportunity first.
-                </Text>
-                <Spacer />
-                <Flex
-                  align="center"
-                  mt={{ sm: "20px", lg: "40px", xl: "90px" }}
-                >
-                  <Button p="0px" variant="no-hover" bg="transparent" mt="12px">
-                    <Text
-                      fontSize="sm"
-                      fontWeight="bold"
-                      _hover={{ me: "4px" }}
-                      transition="all .5s ease"
-                    >
-                      Read more
-                    </Text>
-                    <Icon
-                      as={BsArrowRight}
-                      w="20px"
-                      h="20px"
-                      fontSize="xl"
-                      transition="all .5s ease"
-                      mx=".3rem"
-                      cursor="pointer"
-                      _hover={{ transform: "translateX(20%)" }}
-                      pt="4px"
-                    />
-                  </Button>
-                </Flex>
-              </Flex>
-            </Portal>
           </CardBody>
         </Card>
       </Grid>

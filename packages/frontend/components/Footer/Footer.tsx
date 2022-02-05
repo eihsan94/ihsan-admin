@@ -46,7 +46,7 @@ export default function Footer(props: Props) {
         >
           {isRtl
             ? " توقيت الإبداعية"
-            : "Creative Tim "}
+            : "Ihsan Admin "}
         </Link>
         &
         <Link
@@ -71,7 +71,7 @@ export default function Footer(props: Props) {
           <Link color="gray.400" href="https://www.creative-tim.com">
             {isRtl
               ? "توقيت الإبداعية"
-              : "Creative Tim"}
+              : "Ihsan Admin"}
           </Link>
         </ListItem>
         <ListItem

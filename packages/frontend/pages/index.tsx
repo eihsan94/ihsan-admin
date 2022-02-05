@@ -9,9 +9,10 @@ import { FC } from "react";
 import { noAppendCookiesGetLists } from "@utils/crudUtil";
 import { UserDashboard, Role, User } from '@lib'
 import { useAppContext } from "contexts/AppContext";
-import { Flex, Spinner } from "@chakra-ui/react";
+import { Button, Flex, Spinner } from "@chakra-ui/react";
 import RoleTable from "@components/Tables/roleTable";
 import UserTable from "@components/Tables/userTable";
+import Link from "next/link";
 
 interface Props {
   session: string;
@@ -66,6 +67,9 @@ const Home: FC<Props> = () => {
         </Flex>
         : isAdmin &&
         <>
+          <Link href={"/dashboard"} passHref>
+            <Button>Go to dashboard</Button>
+          </Link>
           <RoleTable roles={roles} />
           <UserTable users={users} />
         </>

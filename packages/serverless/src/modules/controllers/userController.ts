@@ -1,7 +1,7 @@
 
 import expressAsyncHandler from 'express-async-handler'
 import { getAll, postSingle, getAllUser, putSingleUser, deleteSingleUser } from '../utils/crudUtil'
-import {  validatePassword } from '../utils/encryptionUtil'
+import { validatePassword } from '../utils/encryptionUtil'
 import * as uuid from 'uuid'
 import { Role, User, UserDashboard } from '@lib'
 
@@ -10,14 +10,14 @@ import { Role, User, UserDashboard } from '@lib'
  * @route   GET /api/users
  * @access  Private/Admin
 */
-const getUsers = expressAsyncHandler(async ({res}) => {
+const getUsers = expressAsyncHandler(async ({ res }) => {
   try {
     const users = (await getAllUser('USER')).json
     const roles = (await getAll('pk', 'roles')).json
-    const fUsers = users.map((u:User) => ({...u, role_name: roles.find((r: Role) => r.pk === u.role_pk).role_name}))
+    const fUsers = users.map((u: User) => ({ ...u, role_name: roles.find((r: Role) => r.pk === u.role_pk).role_name }))
     return res.status(200).json(fUsers)
   } catch (error) {
-    return res.status(500).json({error})
+    return res.status(500).json({ error })
   }
 })
 
@@ -27,7 +27,7 @@ const getUsers = expressAsyncHandler(async ({res}) => {
  * @route   GET /api/users
  * @access  Private/Admin
 */
-const getAllUserInfo = expressAsyncHandler(async ({res}) => {
+const getAllUserInfo = expressAsyncHandler(async ({ res }) => {
   const result = await getAllUser('')
   return res.status(result.status).json(result.json)
 })
@@ -37,12 +37,14 @@ const getAllUserInfo = expressAsyncHandler(async ({res}) => {
  * @route   GET /api/users
  * @access  Private/Admin
 */
-const getUserLatest = expressAsyncHandler(async (req,res) => {
+const getUserLatest = expressAsyncHandler(async (req, res) => {
+  console.log("test");
+
   try {
     const dashboard = await generateDashboard((req as any).user)
     return res.status(dashboard.status).json(dashboard)
   } catch (error) {
-    return res.status(error.status).json({error})
+    return res.status(error.status).json({ error })
   }
 })
 
@@ -67,13 +69,13 @@ const registerUser = expressAsyncHandler(async (req, res) => {
   const timestamp = new Date().getTime()
   const user: User = req.body
   const users = (await getAll('email', user.email, '-user')).json
-  const userExist = users.length >0 
+  const userExist = users.length > 0
   if (userExist) {
     const isRegisteredWithGoogle = users.filter((u: User) => u.GSI1PK).length > 0
-    return res.status(400).json({error: isRegisteredWithGoogle ?  `このメールはすでにgoogleで登録されたので, googleでログインしてください` : `このメールはすでに登録されています。`})
+    return res.status(400).json({ error: isRegisteredWithGoogle ? `このメールはすでにgoogleで登録されたので, googleでログインしてください` : `このメールはすでに登録されています。` })
   }
-  
-  const id= uuid.v4()
+
+  const id = uuid.v4()
   const Item = {
     pk: `USER#${id}`,
     sk: `USER#${id}`,
@@ -89,7 +91,7 @@ const registerUser = expressAsyncHandler(async (req, res) => {
   try {
     await postSingle(Item, '-user')
     // await postSingle(OAuthItem, '-user')
-    return res.status(200).json({message:"user created"})
+    return res.status(200).json({ message: "user created" })
   } catch (error) {
     return res.status(error.status).json(error)
   }
@@ -99,9 +101,9 @@ const registerUser = expressAsyncHandler(async (req, res) => {
  * @desc    Delete user
  * @route   DELETE /api/users/:id
  * @access  Private/Admin
-*/ 
+*/
 const deleteUser = expressAsyncHandler(async (req, res) => {
-  const id  = req.params.id
+  const id = req.params.id
   const result = await deleteSingleUser(id)
   return res.status(result.status).json(result.json)
 })
@@ -112,23 +114,23 @@ const deleteUser = expressAsyncHandler(async (req, res) => {
  * @access  Private
  */
 const updateUser = expressAsyncHandler(async (req, res) => {
-  const id  = req.params.id
+  const id = req.params.id
   const oldUser = (await getAll('id', id, '-user')).json[0]
   if (!oldUser) {
-    return res.status(422).json({error: `このユーザーは存在しません`})
+    return res.status(422).json({ error: `このユーザーは存在しません` })
   }
   const user: User = req.body
   console.log(oldUser);
-  
+
   const keyValArr = [
-    {key: 'role_pk', val: user.role_pk} ,
-    {key: 'shop_pks', val: user.shop_pks} ,
-    {key: 'email', val: user.email} ,
-    {key: 'nickname', val: user.nickname} ,
-    {key: '#name', val: user.name, isReservedKeyword: true} ,
-    {key: 'image', val: user.image} ,
-    {key: 'birthday', val: user.birthday} ,
-    {key: 'userPoint', val: user.userPoint} ,
+    { key: 'role_pk', val: user.role_pk },
+    { key: 'shop_pks', val: user.shop_pks },
+    { key: 'email', val: user.email },
+    { key: 'nickname', val: user.nickname },
+    { key: '#name', val: user.name, isReservedKeyword: true },
+    { key: 'image', val: user.image },
+    { key: 'birthday', val: user.birthday },
+    { key: 'userPoint', val: user.userPoint },
   ]
   const result = await putSingleUser(oldUser.pk, oldUser.sk, keyValArr)
   return res.status(result.status).json(result.json)
@@ -145,11 +147,11 @@ const authUser = expressAsyncHandler(async (req, res) => {
   const users = (await getAll('email', email, '-user')).json
   // CHECK IF EMAIL IS REGISTERED USING GOOGLE
   if (users.filter((u: User) => u.GSI1PK)[0]) {
-    return res.status(401).json({error: 'このアカウントはgoogleで登録されたのでgoogleでログインしてください😭'})
+    return res.status(401).json({ error: 'このアカウントはgoogleで登録されたのでgoogleでログインしてください😭' })
   }
   const user = users[0]
   if (!user) {
-    return res.status(401).json({error: 'このアカウントはまだ登録されていません😢'})
+    return res.status(401).json({ error: 'このアカウントはまだ登録されていません😢' })
   }
 
   if (user && (await validatePassword(password, user.password))) {
@@ -158,7 +160,7 @@ const authUser = expressAsyncHandler(async (req, res) => {
     delete user.password
     res.json(user)
   } else {
-    res.status(401).json({error: 'メールアドレスもしくはパスワードが異なります😢'})
+    res.status(401).json({ error: 'メールアドレスもしくはパスワードが異なります😢' })
   }
 })
 
@@ -175,39 +177,39 @@ export {
 
 const generateDashboard = async (user: User) => {
   const defaultMenus = [
-    {label: 'ホーム', href: '/'},
+    { label: 'ホーム', href: '/' },
   ]
-  let dashboard: UserDashboard = {status: 200, json: {menus: defaultMenus}}
+  let dashboard: UserDashboard = { status: 200, json: { menus: defaultMenus } }
   try {
-    
+
     const roles = (await getAll('pk', 'roles')).json
-    const isAdmin = roles.find((r:Role) => r.role_name === 'ADMIN').pk === user.role_pk
+    const isAdmin = roles.find((r: Role) => r.role_name === 'ADMIN').pk === user.role_pk
     /**
      * @role isAdmin
      * @description {roles, users}
      */
     if (isAdmin) {
       const users = (await getAllUser('USER')).json
-      const fUsers = users.map((u:User) => {
+      const fUsers = users.map((u: User) => {
         const currRole = roles.find((r: Role) => r.pk === u.role_pk)
         const role_name = currRole ? currRole.role_name : u.role_pk
         return (
-          {...u, role_name}
+          { ...u, role_name }
         )
       })
       dashboard.json = {
         menus: [
           ...defaultMenus,
-          {label: '全ショップ管理',href: '/all-shop'},
+          { label: '全ショップ管理', href: '/all-shop' },
         ],
         admin: {
-          roles, 
-          users:fUsers,
+          roles,
+          users: fUsers,
         }
       }
     }
   } catch (error) {
-    dashboard = {status: 500, json: error}
+    dashboard = { status: 500, json: error }
   }
   return dashboard
 }

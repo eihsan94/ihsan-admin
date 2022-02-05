@@ -1,4 +1,5 @@
 import { Box } from '@chakra-ui/react'
+import Layout from '@components/layout';
 import React, { } from 'react'
 import DarkModeBtn from '../components/Buttons/darkMode';
 import Footer from '../components/Footer/Footer';
@@ -13,7 +14,7 @@ interface Props { }
 
 function Index(props: Props) {
     return (
-        <Box w="100vw">
+        <Layout>
             <DarkModeBtn />
             <Dashboard />
             <Billing />
@@ -22,7 +23,7 @@ function Index(props: Props) {
             <SignIn />
             <SignUp />
             <Footer />
-        </Box>
+        </Layout>
     )
 }
 
