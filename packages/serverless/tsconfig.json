@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "experimentalDecorators": true,
-    "lib": ["es2019"],
+    "lib": [
+      "es2019"
+    ],
     "removeComments": true,
     "moduleResolution": "node",
     "noUnusedLocals": true,
@@ -15,14 +17,18 @@
     "emitDecoratorMetadata": true,
     "baseUrl": ".", // This must be specified if you want to specify "paths"
     "paths": {
-      "@lib": ["../lib/index.ts"],
+      "@lib": [
+        "../lib/index.ts"
+      ]
     },
   },
   "types": [
     "node",
     "aws-sdk"
   ],
-  "include": ["./**/*.ts"],
+  "include": [
+    "./**/*.ts"
+  ],
   "exclude": [
     "node_modules/**/*",
     ".serverless/**/*",

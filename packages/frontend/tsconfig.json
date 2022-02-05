@@ -20,19 +20,25 @@
     "baseUrl": ".", // This must be specified if "paths" is.
     "paths": {
       "@components/*": [
-        "components/*"
+        "core/components/*"
+      ],
+      "@contexts/*": [
+        "core/contexts/*"
       ],
       "@public/*": [
         "public/*"
       ],
       "@utils/*": [
-        "utils/*"
+        "core/utils/*"
       ],
       "@queries/*": [
         "queries/*"
       ],
       "@helpers/*": [
         "helpers/*"
+      ],
+      "@assets/*": [
+        "core/assets/*"
       ],
       "@lib": [
         "../lib/index.ts"

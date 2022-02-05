@@ -11,7 +11,7 @@ const partitionKeyPrefix = 'roles'
  * @route   GET /api/roles
  * @access  Private/Admin
 */
-const getRoles = expressAsyncHandler(async ({res}) => {
+const getRoles = expressAsyncHandler(async ({ res }) => {
   const result = await getAll('pk', partitionKeyPrefix)
   return res.status(result.status).json(result.json)
 })
@@ -26,7 +26,7 @@ const registerRole = expressAsyncHandler(async (req, res) => {
   const role: Role = req.body
   const roleExists = (await getAll('role_name', partitionKeyPrefix)).json
   if (roleExists.includes(role.role_name)) {
-    return res.status(400).json({error: `この${role.role_name}権限はすでに登録されました`})
+    return res.status(400).json({ error: `この${role.role_name}権限はすでに登録されました` })
   }
   const Item = {
     pk: `${uuid.v4()}-${partitionKeyPrefix}`,
@@ -55,11 +55,11 @@ const getRoleById = expressAsyncHandler(async (req, res) => {
  * @access  Private
  */
 const updateRole = expressAsyncHandler(async (req, res) => {
-  const id  = req.params.id
+  const id = req.params.id
   const role: Role = req.body
   const keyValArr = [
-    {key: 'role_permissions', val: role.role_permissions} ,
-    {key: 'role_name', val: role.role_name} ,
+    { key: 'role_permissions', val: role.role_permissions },
+    { key: 'role_name', val: role.role_name },
   ]
   const result = await putSingle(id, keyValArr)
   return res.status(result.status).json(result.json)
@@ -69,9 +69,9 @@ const updateRole = expressAsyncHandler(async (req, res) => {
  * @desc    Delete role
  * @route   DELETE /api/roles/:id
  * @access  Private/Admin
-*/ 
+*/
 const deleteRole = expressAsyncHandler(async (req, res) => {
-  const id  = req.params.id
+  const id = req.params.id
   const result = await deleteSingle(id)
   return res.status(result.status).json(result.json)
 })

@@ -6,19 +6,13 @@ import {
   Text,
   Container,
   SimpleGrid,
-  useBreakpointValue,
   IconProps,
   Icon,
-  useColorModeValue,
   Image,
-  Button,
 } from '@chakra-ui/react';
-import Logo from '@components/Icons/logo';
-import { redirectHome } from '@utils/ssrAuth';
-import { APP_NAME } from 'config';
-import { GetServerSideProps } from 'next';
-import { signOut } from 'next-auth/react';
-import AuthForm from '../../components/Forms/AuthForm'
+import Logo from 'customs/icons/logo';
+import { APP_NAME } from 'customs/config';
+import AuthForm from '../../core/components/Forms/AuthForm'
 
 export default function Index() {
   const colorMode = 'red.50'

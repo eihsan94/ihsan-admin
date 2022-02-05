@@ -1,18 +1,19 @@
-import Layout from "../components/layout";
+import Layout from "../core/components/layout";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import UserCard from "@components/Card/UserCard";
-import { redirectAuth } from "@utils/ssrAuth";
+import { redirectAuth } from "core/utils/ssrAuth";
 import { GetServerSideProps } from "next";
 
 import { FC } from "react";
-import { noAppendCookiesGetLists } from "@utils/crudUtil";
+import { noAppendCookiesGetLists } from "core/utils/crudUtil";
 import { UserDashboard, Role, User } from '@lib'
-import { useAppContext } from "contexts/AppContext";
+import { useAppContext } from "@contexts/AppContext";
 import { Button, Flex, Spinner } from "@chakra-ui/react";
-import RoleTable from "@components/Tables/roleTable";
-import UserTable from "@components/Tables/userTable";
+
 import Link from "next/link";
+import UserTable from "core/components/Tables/UserTable";
+import RoleTable from "core/components/Tables/RoleTable";
+import UserCard from "core/components/Card/UserCard";
 
 interface Props {
   session: string;

@@ -1,10 +1,10 @@
 import type { AppProps } from 'next/app'
 import { ChakraProvider } from "@chakra-ui/react"
 
-import { FormContextProvider } from 'contexts/FormContext'
-import { AppContextProvider } from 'contexts/AppContext'
+import { FormContextProvider } from '@contexts/FormContext'
+import { AppContextProvider } from '@contexts/AppContext'
 import { SessionProvider } from "next-auth/react"
-import theme from 'theme/theme'
+import theme from 'core/theme/theme'
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 
