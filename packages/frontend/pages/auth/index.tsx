@@ -12,7 +12,7 @@ import {
   useColorModeValue,
   Image,
 } from '@chakra-ui/react';
-import Logo from '@components/icons/logo';
+import Logo from '@components/Icons/logo';
 import { redirectHome } from '@utils/ssrAuth';
 import { APP_NAME } from 'config';
 import { GetServerSideProps } from 'next';
