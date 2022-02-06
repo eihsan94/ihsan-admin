@@ -1,5 +1,7 @@
 import { Box } from '@chakra-ui/react'
+import LanguageButton from '@components/Buttons/languageButton';
 import Layout from '@components/layout';
+import { useI18n } from 'core/hooks/useI18n';
 import React, { } from 'react'
 import DarkModeBtn from '../core/components/Buttons/darkMode';
 import Footer from '../core/components/Footer/Footer';
@@ -13,8 +15,11 @@ import SignUp from '../core/views/Pages/SignUp';
 interface Props { }
 
 function Index(props: Props) {
+    const { translate } = useI18n()
     return (
         <Layout>
+            {translate("LANGUAGE_LABEL")}
+            <LanguageButton />
             <DarkModeBtn />
             <Dashboard />
             <Billing />

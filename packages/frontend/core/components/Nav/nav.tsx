@@ -27,10 +27,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/dist/client/router';
 import { signOut, useSession } from 'next-auth/react';
 import { useAppContext } from '@contexts/AppContext';
+import { useI18n } from 'core/hooks/useI18n';
 
 
 const AuthButton: FC<ButtonProps> = (props) => {
   const router = useRouter()
+  const { translate } = useI18n()
 
   const authHandler = async () => {
     setIsLoggingOut(true)
@@ -55,7 +57,7 @@ const AuthButton: FC<ButtonProps> = (props) => {
       _hover={{
         bg: 'pink.300',
       }}>
-      {session ? 'ログアウト' : 'ログイン・新規登録'}
+      {session ? translate("LOGOUT_LABEL") : translate("AUTH_LABEL")}
     </Button>
   )
 }

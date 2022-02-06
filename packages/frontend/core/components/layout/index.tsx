@@ -21,7 +21,7 @@ const Layout: React.FC<Props> = ({ breadCrumbs, children }) => {
     return (
         <>
             <Nav />
-            <Container maxW={'10xl'} p="10">
+            <Container maxW={'10xl'} p="30px">
                 {breadCrumbs &&
                     <Breadcrumb px={'20'} pt={'10'}>
                         {breadCrumbs.map((item, i) =>
