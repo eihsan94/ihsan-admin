@@ -1,6 +1,7 @@
 import { Box } from '@chakra-ui/react'
 import LanguageButton from '@components/Buttons/languageButton';
 import Layout from '@components/layout';
+import ComingSoonLottie from '@components/Lottie/coming-soon';
 import { useI18n } from 'core/hooks/useI18n';
 import React, { } from 'react'
 import DarkModeBtn from '../core/components/Buttons/darkMode';
@@ -27,6 +28,7 @@ function Index(props: Props) {
             <Tables />
             <SignIn />
             <SignUp />
+            <ComingSoonLottie />
             <Footer />
         </Layout>
     )
