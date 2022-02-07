@@ -283,6 +283,38 @@ export const HomeIcon = (props: IconProps) => {
   )
 }
 
+export const DashboardIcon = (props: IconProps) => {
+  const iconProps = {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    ...props
+  }
+  return (
+    <Icon {...iconProps}>
+      <g>
+        <path d="M3.5 3.5H10.5V10.5H3.5V3.5Z" fill="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M3.5 13.5H10.5V20.5H3.5V13.5Z" fill="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M13.5 3.5H20.5V10.5H13.5V3.5Z" fill="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M13.5 13.5H20.5V20.5H13.5V13.5Z" fill="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+
+      </g>
+    </Icon>
+  )
+}
+export const UserIcon = (props: IconProps) => {
+  const iconProps = {
+    viewBox: "0 0 24 24",
+    ...props
+  }
+  return (
+    <Icon {...iconProps}>
+      <g>
+        <path d="M8 15C5.79086 15 4 16.7909 4 19V21M20 21V19C20 16.7909 18.2091 15 16 15H12M12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11C14.2091 11 16 9.20914 16 7C16 6.27143 15.8052 5.58835 15.4649 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </g>
+    </Icon>
+  )
+}
+
 export const InvisionLogo = (props: IconProps) => {
   const iconProps = {
     viewBox: "0 0 24 24",

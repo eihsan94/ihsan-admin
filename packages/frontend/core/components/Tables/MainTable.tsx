@@ -67,7 +67,7 @@ interface CustomTableProps extends TableProps {
 }
 
 const MainTable: FC<Props> = (props) => {
-    const { config, data, submitFormCallBack } = props
+    const { config, data, submitFormCallBack, ...tableProps } = props
     const { setFormInitValues, setInputFields, setApiHandler, setFormSchema } = useFormContext()
     const { caption, tableConfig, modalFormConfig } = config
     // FOR MODAL USE CASE
@@ -78,9 +78,7 @@ const MainTable: FC<Props> = (props) => {
     // FOR DELETE MODAL
     const { isOpen: isOpenDelete, onOpen: onOpenDelete, onClose: onCloseDelete } = useDisclosure()
     // FOR TABLE PROPS
-    const tableProps: CustomTableProps = { ...props }
-    delete tableProps.config
-    delete tableProps.data
+
 
     const addHandler = () => {
         const { formSchema, apiHandler, inputFields } = modalFormConfig.addModal.formConfig

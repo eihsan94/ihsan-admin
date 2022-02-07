@@ -1,4 +1,5 @@
 import { ApexOptions } from "apexcharts";
+import { primaryColorHex } from "core/theme/styles";
 
 export const barChartData = [
   {
@@ -163,7 +164,7 @@ export const lineChartOptions: ApexOptions = {
       opacityTo: 0,
       stops: [],
     },
-    colors: ["#4FD1C5", "#2D3748"],
+    colors: [primaryColorHex, "#2D3748"],
   },
-  colors: ["#4FD1C5", "#2D3748"],
+  colors: [primaryColorHex, "#2D3748"],
 };

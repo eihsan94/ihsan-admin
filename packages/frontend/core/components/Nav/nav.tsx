@@ -28,6 +28,7 @@ import { useRouter } from 'next/dist/client/router';
 import { signOut, useSession } from 'next-auth/react';
 import { useAppContext } from '@contexts/AppContext';
 import { useI18n } from 'core/hooks/useI18n';
+import { primaryColorHex } from 'core/theme/styles';
 
 
 const AuthButton: FC<ButtonProps> = (props) => {
@@ -51,11 +52,11 @@ const AuthButton: FC<ButtonProps> = (props) => {
       fontSize={'sm'}
       fontWeight={600}
       color={'white'}
-      bg={'pink.400'}
+      bg={primaryColorHex}
       isLoading={isLoggingOut}
       onClick={authHandler}
       _hover={{
-        bg: 'pink.300',
+        opacity: .9,
       }}>
       {session ? translate("LOGOUT_LABEL") : translate("AUTH_LABEL")}
     </Button>
@@ -66,6 +67,7 @@ export default function Nav() {
   const router = useRouter()
   const { isOpen, onToggle } = useDisclosure();
   const [init, setInit] = useState(false)
+  const logoSize = { base: "50px", xl: "100px" }
 
   useEffect(() => {
     setInit(true)
@@ -98,7 +100,7 @@ export default function Nav() {
         </Flex>
         <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }} align={'center'}>
           <Link onClick={() => router.push('/')}>
-            <Logo width="100px" height="100px" />
+            <Logo width={logoSize} height={logoSize} />
           </Link>
           <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
             {init && <DesktopNav />}

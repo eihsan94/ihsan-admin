@@ -1,19 +1,15 @@
 import { ImageProps, Image } from '@chakra-ui/react';
+import Img from '@components/Img';
 
 interface Props extends ImageProps {
-	width: string,
-	height: string,
 }
 
 const Logo: React.FC<Props> = (props) => {
-	const {width, height} = props
 	return (
-		<Image
+		<Img
+			objectFit={"contain"}
 			{...props}
-			width={width}
-			height={height}
 			src={'/images/dogo.png'}
-			fallbackSrc={'/images/dogo.png'}
 			alt="dogo.png"
 			placeholder="blur"
 		/>

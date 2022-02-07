@@ -30,7 +30,7 @@ import BillingRow from "../../components/Tables/BillingRow";
 import TransactionRow from "../../components/Tables/TransactionRow";
 
 // Assets
-const BackgroundCard1 = "@assets/img/BackgroundCard1.png";
+const BackgroundCard1 = "/core/assets/img/BackgroundCard1.png";
 
 function Billing() {
   // Chakra color mode

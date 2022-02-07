@@ -68,9 +68,6 @@ const Home: FC<Props> = () => {
         </Flex>
         : isAdmin &&
         <>
-          <Link href={"/dashboard"} passHref>
-            <Button>Go to dashboard</Button>
-          </Link>
           <RoleTable roles={roles} />
           <UserTable users={users} />
         </>

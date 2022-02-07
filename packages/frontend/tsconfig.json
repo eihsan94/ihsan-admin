@@ -37,9 +37,6 @@
       "@helpers/*": [
         "helpers/*"
       ],
-      "@assets/*": [
-        "core/assets/*"
-      ],
       "@lib": [
         "../lib/index.ts"
       ]
