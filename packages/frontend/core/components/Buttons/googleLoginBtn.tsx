@@ -1,14 +1,16 @@
 import { Button } from '@chakra-ui/react'
-import { signIn } from 'next-auth/react'
-import React from 'react'
+import { signIn, SignInOptions } from 'next-auth/react'
+import React, { FC } from 'react'
 import { FcGoogle } from 'react-icons/fc'
 
-interface Props { }
+interface Props {
+    options?: SignInOptions
+}
 
-function GoogleLoginBtn(props: Props) {
+const GoogleLoginBtn: FC<Props> = ({ options }) => {
     return (
         <Button
-            onClick={() => signIn('google', { callbackUrl: '/' })}
+            onClick={() => signIn('google', options || { callbackUrl: '/' })}
             rounded="full"
             size="lg"
             fontFamily={'heading'}

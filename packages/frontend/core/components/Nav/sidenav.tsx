@@ -12,14 +12,14 @@ import {
 import { HomeIcon, DashboardIcon, UserIcon } from "@components/Icons/Icons"
 import NextLink from "@components/NextLink"
 import { Separator } from "@components/Separator/Separator"
-import { primaryColorHex, primaryColorRgba } from "core/theme/styles"
+import { primaryColorHex, primaryColorRgba } from "customs/theme/styles"
 import { APP_NAME } from "customs/config"
 import Logo from "customs/icons/logo"
 import { signIn, useSession } from "next-auth/react"
 import { useRouter } from "next/router"
 import { FC } from "react"
 
-interface MenuProps extends BoxProps {
+export interface MenuProps extends BoxProps {
     label: string
     icon: JSX.Element
     href: string
@@ -137,7 +137,7 @@ const DesktopNav: FC<NavProps> = ({ menus }) => {
         >
             <NextLink href="/">
                 <Flex py="2em" w="fit-content" alignItems={"center"} >
-                    <Logo h={logoSize} w={logoSize} color="black" />
+                    <Logo h={logoSize} w={logoSize} color={useColorModeValue('black', 'white')} />
                     <Text ml=".5em" display={{ base: "none", xl: "inherit" }} fontWeight={"bold"} textTransform="uppercase">{APP_NAME}</Text>
                 </Flex>
             </NextLink>
@@ -157,7 +157,7 @@ const MobileNav: FC<NavProps> = ({ menus }) => {
             bottom="0"
             borderTop={"solid 1px rgba(0,0,0,.1)"}
             w="100vw"
-            py=".5em"
+            py="1em"
             alignItems={"center"}
             zIndex={4}
             shadow="md"
@@ -165,7 +165,7 @@ const MobileNav: FC<NavProps> = ({ menus }) => {
         >
             <NextLink href="/" flex={1}>
                 <Flex w="100%" justifyContent="center" overflow={"hidden"} alignItems={"center"}>
-                    <Logo h={logoSize} w={logoSize} />
+                    <Logo h={logoSize} w={logoSize} color={useColorModeValue('black', 'white')} />
                 </Flex>
             </NextLink>
             {menus.map((m, i) => <Menu flex={1} key={i} {...m} />)}
@@ -174,12 +174,11 @@ const MobileNav: FC<NavProps> = ({ menus }) => {
     )
 }
 
-export const SideNav: FC<BoxProps> = () => {
-    const size = "1em"
-    const menus: MenuProps[] = [
-        { label: "Top", icon: <HomeIcon h={size} w={size} />, href: '/' },
-        { label: "Dashboard", icon: <DashboardIcon h={size} w={size} />, href: '/dashboard' },
-    ]
+export interface SideNavProps extends BoxProps {
+    menus: MenuProps[]
+}
+
+export const SideNav: FC<SideNavProps> = ({ menus = [] }) => {
     return (
         <>
             <Box display={{ base: "inherit", md: "none" }}>

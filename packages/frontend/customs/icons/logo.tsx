@@ -9,8 +9,8 @@ const Logo: React.FC<Props> = (props) => {
 		<Img
 			objectFit={"contain"}
 			{...props}
-			src={'/images/dogo.png'}
-			alt="dogo.png"
+			src={'/images/dogo.webp'}
+			alt="dogo.webp"
 			placeholder="blur"
 		/>
 	);

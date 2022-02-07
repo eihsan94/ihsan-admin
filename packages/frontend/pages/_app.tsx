@@ -4,7 +4,8 @@ import { ChakraProvider } from "@chakra-ui/react"
 import { FormContextProvider } from '@contexts/FormContext'
 import { AppContextProvider } from '@contexts/AppContext'
 import { SessionProvider } from "next-auth/react"
-import theme from 'core/theme/theme'
+import theme from 'customs/theme/theme'
+
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 

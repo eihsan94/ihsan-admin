@@ -28,7 +28,7 @@ import { useRouter } from 'next/dist/client/router';
 import { signOut, useSession } from 'next-auth/react';
 import { useAppContext } from '@contexts/AppContext';
 import { useI18n } from 'core/hooks/useI18n';
-import { primaryColorHex } from 'core/theme/styles';
+import { primaryColorHex } from 'customs/theme/styles';
 
 
 const AuthButton: FC<ButtonProps> = (props) => {
@@ -66,12 +66,8 @@ const AuthButton: FC<ButtonProps> = (props) => {
 export default function Nav() {
   const router = useRouter()
   const { isOpen, onToggle } = useDisclosure();
-  const [init, setInit] = useState(false)
   const logoSize = { base: "50px", xl: "100px" }
 
-  useEffect(() => {
-    setInit(true)
-  }, [])
 
   return (
     <Box>
@@ -100,10 +96,10 @@ export default function Nav() {
         </Flex>
         <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }} align={'center'}>
           <Link onClick={() => router.push('/')}>
-            <Logo width={logoSize} height={logoSize} />
+            <Logo width={logoSize} height={logoSize} color={useColorModeValue('black', 'white')} />
           </Link>
           <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-            {init && <DesktopNav />}
+            <DesktopNav />
           </Flex>
         </Flex>
 

@@ -1,5 +1,4 @@
 import { extendTheme } from "@chakra-ui/react";
-import { globalStyles } from "./styles";
 import { font } from "./foundations/fonts";
 import { breakpoints } from "./foundations/breakpoints";
 import { buttonStyles } from "./components/button";
@@ -13,9 +12,9 @@ import { MainPanelComponent } from "./additions/layout/MainPanel";
 import { PanelContentComponent } from "./additions/layout/PanelContent";
 import { PanelContainerComponent } from "./additions/layout/PanelContainer";
 
-export default extendTheme(
+export const coreTheme = (customTheme: any) => extendTheme(
+  customTheme,
   { breakpoints }, // Breakpoints
-  globalStyles,
   font, // Global styles
   buttonStyles, // Button styles
   badgeStyles, // Badge styles

@@ -5,6 +5,8 @@ import { fetcherUtil } from '@utils/swrUtil';
 import { handleHttpError } from '@utils/errorHandlerUtil';
 import { useCallback, useState } from 'react';
 import useErrorToaster from '@components/ErrorHandler/ErrorToaster';
+import { useToast, UseToastOptions } from '@chakra-ui/react';
+
 
 const baseURL = `${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/api`;
 
@@ -19,13 +21,19 @@ const useCrudHooks = (prefix: string, reqConfig?: AxiosRequestConfig) => {
     const apiUrl = `${baseURL}/${prefix}`
     const fetcher = async (...args: any) => fetcherUtil(axios.get(args, await appendAuth(reqConfig)))
     const { errorToast } = useErrorToaster()
+    const toaster = useToast()
     const [reqLoading, setReqLoading] = useState(false)
     const { data, error, mutate: mutateData, ...swrProps } = useSWR(apiUrl, fetcher) // useSWR HOOKS INIT
     // SERVER REQ WRAPPER
-    const makeServerReq = async (fn: Promise<AxiosResponse<any, any>>) => {
+    const makeServerReq = async (fn: Promise<AxiosResponse<any, any>>, toasterProps: UseToastOptions) => {
         setReqLoading(true)
         try {
             await fn
+            toaster.closeAll()
+            toaster({
+                status: "success",
+                ...toasterProps,
+            })
         } catch (err) {
             const error = handleHttpError(err) // GEN ERROR
             errorToast(error) // SHOW ERROR TOASTER
@@ -34,7 +42,7 @@ const useCrudHooks = (prefix: string, reqConfig?: AxiosRequestConfig) => {
         setReqLoading(false)
     }
     // DELETE HOOKS
-    const deleteHandler = useCallback(async (pk: string | undefined) => {
+    const deleteHandler = useCallback(async (pk: string, successToastOptions: UseToastOptions) => {
         // Optimistic DELETE UPDATE
         await mutateData((res: any) => {
             const { data: dataState } = res
@@ -44,7 +52,7 @@ const useCrudHooks = (prefix: string, reqConfig?: AxiosRequestConfig) => {
             }
         }, false)
         // SERVER DELETE
-        await makeServerReq(axios.delete(`${apiUrl}/${pk}`, await appendAuth(reqConfig)))
+        await makeServerReq(axios.delete(`${apiUrl}/${pk}`, await appendAuth(reqConfig)), successToastOptions)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 

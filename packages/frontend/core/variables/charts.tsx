@@ -1,5 +1,5 @@
 import { ApexOptions } from "apexcharts";
-import { primaryColorHex } from "core/theme/styles";
+import { primaryColorHex } from "customs/theme/styles";
 
 export const barChartData = [
   {

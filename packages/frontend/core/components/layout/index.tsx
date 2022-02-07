@@ -10,7 +10,8 @@ import {
     Flex,
 } from '@chakra-ui/react';
 import Link from 'next/link'
-import { SideNav } from '@components/Nav/sidenav';
+import { MenuProps, SideNav } from '@components/Nav/sidenav';
+import { HomeIcon, DashboardIcon } from '@components/Icons/Icons';
 export interface BreadCrumbItemProps {
     href: string;
     name: string;
@@ -20,10 +21,14 @@ interface Props {
 }
 
 const Layout: React.FC<Props> = ({ breadCrumbs, children }) => {
-
+    const size = "1em"
+    const menus: MenuProps[] = [
+        { label: "Top", icon: <HomeIcon h={size} w={size} />, href: '/' },
+        { label: "Dashboard", icon: <DashboardIcon h={size} w={size} />, href: '/dashboard' },
+    ]
     return (
         <Flex h="100vh">
-            <SideNav />
+            <SideNav menus={menus} />
             <Box w="100%" h="100%" overflow={"auto"}>
                 <Nav />
                 <Container maxW={'10xl'} p="30px">

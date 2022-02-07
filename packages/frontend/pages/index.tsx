@@ -1,19 +1,17 @@
 import Layout from "../core/components/layout";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { redirectAuth } from "core/utils/ssrAuth";
-import { GetServerSideProps } from "next";
 
 import { FC } from "react";
 import { noAppendCookiesGetLists } from "core/utils/crudUtil";
 import { UserDashboard, Role, User } from '@lib'
 import { useAppContext } from "@contexts/AppContext";
-import { Button, Flex, Spinner } from "@chakra-ui/react";
+import { Flex, Spinner } from "@chakra-ui/react";
 
-import Link from "next/link";
 import UserTable from "core/components/Tables/UserTable";
 import RoleTable from "core/components/Tables/RoleTable";
 import UserCard from "core/components/Card/UserCard";
+import { useRouter } from "next/router";
 
 interface Props {
   session: string;
@@ -21,7 +19,7 @@ interface Props {
 }
 
 const Home: FC<Props> = () => {
-
+  const router = useRouter()
   const { data: session, status } = useSession()
 
   const [roles, setRoles] = useState<Role[]>([])
@@ -30,7 +28,9 @@ const Home: FC<Props> = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<User[] | null>(null)
   const { setCurrentAppState } = useAppContext()
-
+  if (status === "unauthenticated") {
+    router.push("/auth")
+  }
   useEffect(() => {
     (async () => {
       if (session) {
@@ -56,7 +56,7 @@ const Home: FC<Props> = () => {
       }
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session])
+  }, [status, session])
 
   return (
     <Layout>
@@ -76,7 +76,3 @@ const Home: FC<Props> = () => {
   )
 }
 export default Home;
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  return redirectAuth(context)
-};

@@ -1,6 +1,7 @@
 import Layout from '@components/layout';
 import ComingSoonLottie from '@components/Lottie/coming-soon';
-import DarkModeBtn from '../core/components/Buttons/darkMode';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 import Footer from '../core/components/Footer/Footer';
 import Billing from '../core/views/Dashboard/Billing';
 import Dashboard from '../core/views/Dashboard/Dashboard';
@@ -12,17 +13,27 @@ import SignUp from '../core/views/Pages/SignUp';
 interface Props { }
 
 function Index(props: Props) {
+    const { status } = useSession()
+    const router = useRouter()
+    if (status === "unauthenticated") {
+        router.push("/auth")
+    }
     return (
-        <Layout>
-            <Dashboard />
-            <Billing />
-            <Profile />
-            <Tables />
-            <SignIn />
-            <SignUp />
-            <ComingSoonLottie />
-            <Footer />
-        </Layout>
+        <>
+            {
+                status === "authenticated"
+                && <Layout>
+                    <Dashboard />
+                    <Billing />
+                    <Profile />
+                    <Tables />
+                    <SignIn />
+                    <SignUp />
+                    <ComingSoonLottie />
+                    <Footer />
+                </Layout>
+            }
+        </>
     )
 }
 
