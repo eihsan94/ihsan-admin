@@ -6,98 +6,86 @@ plugins:
   - serverless-s3-local
   - serverless-dynamodb-local
 
-custom:
-  cors:
-    origin: "*"
-    headers:
-      - Content-Type
-      - X-Amz-Date
-      - Authorization
-      - X-Api-Key
-      - X-Amz-Security-Token
-      - X-Amz-User-Agent
-      - If-Modified-Since
+# custom:
+#   cors:
+#     origin: "*"
+#     headers:
+#       - Content-Type
+#       - X-Amz-Date
+#       - Authorization
+#       - X-Api-Key
+#       - X-Amz-Security-Token
+#       - X-Amz-User-Agent
+#       - If-Modified-Since
 
-  bucketName: ihsan-admin-${opt:stage}-bucket
-  s3:
-    host: localhost
-    directory: /tmp
+#   bucketName: ihsan-admin-${opt:stage}-bucket
+#   s3:
+#     host: localhost
+#     directory: /tmp
 
-  dynamodb:
-    stages:
-      - dev
-      - local
-    start:
-      port: 8000
-      inMemory: true
-      migrate: true
-      seed: true
-    seed:
-      local:
-        sources:
-          - table: ${self:service}-${opt:stage, self:provider.stage}
-            sources: [./src/modules/db/seed/mainTable.json]
-          - table: ${self:service}-${opt:stage, self:provider.stage}-user
-            sources: [./src/modules/db/seed/user.json]
+#   dynamodb:
+#     stages:
+#       - dev
+#       - local
+#     start:
+#       port: 8000
+#       inMemory: true
+#       migrate: true
+#       seed: true
+#     seed:
+#       local:
+#         sources:
+#           - table: ${self:service}-${opt:stage, self:provider.stage}
+#             sources: [./src/modules/db/seed/mainTable.json]
+#           - table: ${self:service}-${opt:stage, self:provider.stage}-user
+#             sources: [./src/modules/db/seed/user.json]
 
-  serverless-offline:
-    httpPort: 3009
-    useSeparateProcess: true
-    noPrependStageInUrl: true #need to set this to prevent weird url prefix
+#   serverless-offline:
+#     httpPort: 3009
+#     useSeparateProcess: true
+#     noPrependStageInUrl: true #need to set this to prevent weird url prefix
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs18.x
   region: ap-northeast-1
   stage: ${opt:stage}
-  environment:
-    # ここの環境変数はLAMBDAのなかで使えるための環境変数ですTSには（process.env.STAGEだったりprocess.env.DYNAMO_TABLEで使える）
-    STAGE: ${self:provider.stage}
-    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
-    DYNAMODB_TABLE_USERS: ${self:service}-${opt:stage, self:provider.stage}-user
-    BUCKET_NAME: ${self:custom.bucketName}
-    BUCKET_URL: https://${self:custom.bucketName}.s3.ap-northeast-1.amazonaws.com
-  lambdaHashingVersion: 20201221
-  iam:
-    role:
-      statements:
-        - Effect: Allow
-          Action:
-            - dynamodb:Query
-            - dynamodb:Scan
-            - dynamodb:GetItem
-            - dynamodb:PutItem
-            - dynamodb:UpdateItem
-            - dynamodb:DeleteItem
-          Resource:
-            - arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}
-            - arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_USERS}
-        - Effect: "Allow"
-          Action:
-            - "s3:ListBucket"
-            - "s3:GetObject"
-            - "s3:PutObject"
-            - "s3:DeleteObject"
-          Resource:
-            - !GetAtt [MediasBucket, Arn]
-            - !Join
-              - ""
-              - - !GetAtt [MediasBucket, Arn]
-                - /*
+#   environment:
+#     # ここの環境変数はLAMBDAのなかで使えるための環境変数ですTSには（process.env.STAGEだったりprocess.env.DYNAMO_TABLEで使える）
+#     STAGE: ${self:provider.stage}
+#     DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+#     DYNAMODB_TABLE_USERS: ${self:service}-${opt:stage, self:provider.stage}-user
+#     BUCKET_NAME: ${self:custom.bucketName}
+#     BUCKET_URL: https://${self:custom.bucketName}.s3.ap-northeast-1.amazonaws.com
+#   lambdaHashingVersion: 20201221
+#   iam:
+#     role:
+#       statements:
+#         - Effect: Allow
+#           Action:
+#             - dynamodb:Query
+#             - dynamodb:Scan
+#             - dynamodb:GetItem
+#             - dynamodb:PutItem
+#             - dynamodb:UpdateItem
+#             - dynamodb:DeleteItem
+#           Resource:
+#             - arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}
+#             - arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_USERS}
+#         - Effect: "Allow"
+#           Action:
+#             - "s3:ListBucket"
+#             - "s3:GetObject"
+#             - "s3:PutObject"
+#             - "s3:DeleteObject"
+#           Resource:
+#             - !GetAtt [MediasBucket, Arn]
+#             - !Join
+#               - ""
+#               - - !GetAtt [MediasBucket, Arn]
+#                 - /*
 
 functions:
-  # preSignUp:
-  #   handler: preSignUp.handler
-  #   events:
-  #     - cognitoUserPool:
-  #         pool: MyUserPool
-  #         trigger: PreSignUp
-  # customMessage:
-  #   handler: customMessage.handler
-  #   events:
-  #     - cognitoUserPool:
-  #         pool: MyUserPool
-  #         trigger: CustomMessage
 
   hello:
     handler: src/handler.server
@@ -109,86 +97,86 @@ functions:
           path: /{proxy+}
           method: ANY
 
-resources:
-  Resources:
-    MediasBucket:
-      Type: AWS::S3::Bucket
-      Properties:
-        BucketName: ${self:custom.bucketName}
-    MediasBucketS3BucketPolicy:
-      Type: AWS::S3::BucketPolicy
-      Properties:
-        Bucket:
-          Ref: MediasBucket
-        PolicyDocument:
-          Statement:
-            - Sid: PublicReadGetObject
-              Effect: Allow
-              Principal: "*"
-              Action:
-                - s3:GetObject
-              Resource:
-                Fn::Join:
-                  ["", ["arn:aws:s3:::", { "Ref": "MediasBucket" }, "/*"]]
+# resources:
+#   Resources:
+#     MediasBucket:
+#       Type: AWS::S3::Bucket
+#       Properties:
+#         BucketName: ${self:custom.bucketName}
+#     MediasBucketS3BucketPolicy:
+#       Type: AWS::S3::BucketPolicy
+#       Properties:
+#         Bucket:
+#           Ref: MediasBucket
+#         PolicyDocument:
+#           Statement:
+#             - Sid: PublicReadGetObject
+#               Effect: Allow
+#               Principal: "*"
+#               Action:
+#                 - s3:GetObject
+#               Resource:
+#                 Fn::Join:
+#                   ["", ["arn:aws:s3:::", { "Ref": "MediasBucket" }, "/*"]]
 
-    AppTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${self:provider.environment.DYNAMODB_TABLE}
-        AttributeDefinitions:
-          - AttributeName: pk
-            AttributeType: S
-          - AttributeName: gsi
-            AttributeType: S
-        KeySchema:
-          - AttributeName: pk
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        GlobalSecondaryIndexes:
-          - IndexName: gsi_1
-            KeySchema:
-              - AttributeName: pk
-                KeyType: HASH
-              - AttributeName: gsi
-                KeyType: RANGE
-            Projection:
-              ProjectionType: ALL
-            ProvisionedThroughput:
-              ReadCapacityUnits: 1
-              WriteCapacityUnits: 1
+#     AppTable:
+#       Type: AWS::DynamoDB::Table
+#       Properties:
+#         TableName: ${self:provider.environment.DYNAMODB_TABLE}
+#         AttributeDefinitions:
+#           - AttributeName: pk
+#             AttributeType: S
+#           - AttributeName: gsi
+#             AttributeType: S
+#         KeySchema:
+#           - AttributeName: pk
+#             KeyType: HASH
+#         ProvisionedThroughput:
+#           ReadCapacityUnits: 1
+#           WriteCapacityUnits: 1
+#         GlobalSecondaryIndexes:
+#           - IndexName: gsi_1
+#             KeySchema:
+#               - AttributeName: pk
+#                 KeyType: HASH
+#               - AttributeName: gsi
+#                 KeyType: RANGE
+#             Projection:
+#               ProjectionType: ALL
+#             ProvisionedThroughput:
+#               ReadCapacityUnits: 1
+#               WriteCapacityUnits: 1
 
-    UsersTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${self:provider.environment.DYNAMODB_TABLE_USERS}
-        AttributeDefinitions:
-          - AttributeName: pk
-            AttributeType: S
-          - AttributeName: sk
-            AttributeType: S
-          - AttributeName: GSI1PK
-            AttributeType: S
-          - AttributeName: GSI1SK
-            AttributeType: S
-        KeySchema:
-          - AttributeName: pk
-            KeyType: HASH
-          - AttributeName: sk
-            KeyType: RANGE
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        GlobalSecondaryIndexes:
-          - IndexName: GSI1
-            KeySchema:
-              - AttributeName: GSI1PK
-                KeyType: HASH
-              - AttributeName: GSI1SK
-                KeyType: RANGE
-            Projection:
-              ProjectionType: ALL
-            ProvisionedThroughput:
-              ReadCapacityUnits: 1
-              WriteCapacityUnits: 1
+#     UsersTable:
+#       Type: AWS::DynamoDB::Table
+#       Properties:
+#         TableName: ${self:provider.environment.DYNAMODB_TABLE_USERS}
+#         AttributeDefinitions:
+#           - AttributeName: pk
+#             AttributeType: S
+#           - AttributeName: sk
+#             AttributeType: S
+#           - AttributeName: GSI1PK
+#             AttributeType: S
+#           - AttributeName: GSI1SK
+#             AttributeType: S
+#         KeySchema:
+#           - AttributeName: pk
+#             KeyType: HASH
+#           - AttributeName: sk
+#             KeyType: RANGE
+#         ProvisionedThroughput:
+#           ReadCapacityUnits: 1
+#           WriteCapacityUnits: 1
+#         GlobalSecondaryIndexes:
+#           - IndexName: GSI1
+#             KeySchema:
+#               - AttributeName: GSI1PK
+#                 KeyType: HASH
+#               - AttributeName: GSI1SK
+#                 KeyType: RANGE
+#             Projection:
+#               ProjectionType: ALL
+#             ProvisionedThroughput:
+#               ReadCapacityUnits: 1
+#               WriteCapacityUnits: 1
